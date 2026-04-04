@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI → PDF · Response Formatter</title>
+
+<!-- KaTeX for math rendering -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+
+<!-- Marked.js for Markdown -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ─── Variables ─────────────────────────────────────────── */
+:root {
+  --bg:        #0b0c10;
+  --surface:   #12131a;
+  --border:    #1e2030;
+  --panel:     #0f1018;
+  --text:      #c8cad8;
+  --muted:     #5a5d72;
+  --accent:    #e8b44b;
+  --accent2:   #7c8cf8;
+  --paper:     #fdfaf4;
+  --ink:       #1a1a1e;
+  --ink-muted: #4a4a56;
+  --rule:      #d0cbc0;
+  --sidebar-w: 420px;
+}
+
+/* ─── Reset ─────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Top Bar ────────────────────────────────────────────── */
+#topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 54px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.15rem;
+  letter-spacing: 0.01em;
+  color: #e8e9ef;
+}
+
+.logo-icon {
+  width: 28px; height: 28px;
+  background: var(--accent);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  color: #0b0c10;
+  font-weight: 700;
+  font-family: 'Fira Code', monospace;
+}
+
+.logo span { color: var(--accent); }
+
+.topbar-actions { display: flex; gap: 10px; align-items: center; }
+
+.btn {
+  padding: 7px 16px;
+  border-radius: 7px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.18s;
+  letter-spacing: 0.02em;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { color: var(--text); border-color: #2e3050; }
+
+.btn-primary {
+  background: var(--accent);
+  color: #0b0c10;
+  font-weight: 600;
+}
+.btn-primary:hover { background: #f0c265; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(232,180,75,0.3); }
+.btn-primary:active { transform: translateY(0); }
+
+/* ─── Main Layout ────────────────────────────────────────── */
+#app {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ─── Editor Panel ───────────────────────────────────────── */
+#editor-panel {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.panel-header {
+  padding: 14px 20px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+#input-area {
+  flex: 1;
+  resize: none;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 20px;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.8rem;
+  line-height: 1.65;
+  color: #9ea3be;
+  caret-color: var(--accent);
+  overflow-y: auto;
+}
+
+#input-area::placeholder { color: var(--muted); font-style: italic; }
+#input-area::-webkit-scrollbar { width: 5px; }
+#input-area::-webkit-scrollbar-track { background: transparent; }
+#input-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+.editor-footer {
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.options-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.opt-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.opt-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.opt-input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.82rem;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.15s;
+}
+.opt-input:focus { border-color: var(--accent2); }
+
+select.opt-input { cursor: pointer; }
+
+.char-count {
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+/* ─── Preview Panel ──────────────────────────────────────── */
+#preview-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #1a1b25;
+}
+
+#preview-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+#preview-scroll::-webkit-scrollbar { width: 7px; }
+#preview-scroll::-webkit-scrollbar-track { background: transparent; }
+#preview-scroll::-webkit-scrollbar-thumb { background: #2a2b38; border-radius: 10px; }
+
+/* ─── Paper ──────────────────────────────────────────────── */
+#paper {
+  background: var(--paper);
+  color: var(--ink);
+  width: 100%;
+  max-width: 760px;
+  min-height: 1050px;
+  border-radius: 3px;
+  box-shadow:
+    0 2px 8px rgba(0,0,0,0.4),
+    0 20px 60px rgba(0,0,0,0.5),
+    0 0 0 0.5px rgba(255,255,255,0.03);
+  padding: 72px 80px;
+  font-family: 'Lora', serif;
+  font-size: 11pt;
+  line-height: 1.75;
+  position: relative;
+  animation: paperIn 0.3s ease;
+}
+
+@keyframes paperIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Empty State ────────────────────────────────────────── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 600px;
+  gap: 12px;
+  color: var(--ink-muted);
+  text-align: center;
+  font-family: 'Outfit', sans-serif;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 8px;
+  opacity: 0.35;
+}
+
+.empty-state h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink-muted);
+  font-family: 'Outfit', sans-serif;
+}
+
+.empty-state p {
+  font-size: 0.82rem;
+  color: #9090a0;
+  max-width: 300px;
+  line-height: 1.5;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* ─── Document Content Styles ────────────────────────────── */
+#doc-title-display {
+  font-family: 'DM Serif Display', serif;
+  font-size: 24pt;
+  line-height: 1.2;
+  color: #111118;
+  margin-bottom: 6px;
+}
+
+#doc-meta {
+  font-family: 'Outfit', sans-serif;
+  font-size: 8.5pt;
+  color: var(--ink-muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1.5px solid var(--rule);
+}
+
+#rendered-content h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 20pt;
+  font-weight: 400;
+  color: #111118;
+  margin: 28px 0 10px;
+  line-height: 1.25;
+}
+
+#rendered-content h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 15pt;
+  font-weight: 400;
+  color: #111118;
+  margin: 24px 0 8px;
+  line-height: 1.3;
+}
+
+#rendered-content h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11pt;
+  font-weight: 700;
+  color: #1a1a26;
+  margin: 20px 0 6px;
+  letter-spacing: 0.01em;
+}
+
+#rendered-content h4 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 10pt;
+  font-weight: 700;
+  color: #2a2a3a;
+  margin: 16px 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+#rendered-content p {
+  margin: 0 0 12px;
+  orphans: 3;
+  widows: 3;
+}
+
+#rendered-content ul, #rendered-content ol {
+  margin: 0 0 12px 0;
+  padding-left: 26px;
+}
+
+#rendered-content li {
+  margin-bottom: 4px;
+  line-height: 1.65;
+}
+
+#rendered-content li > ul,
+#rendered-content li > ol {
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+#rendered-content strong { font-weight: 600; color: #111118; }
+#rendered-content em { font-style: italic; }
+
+#rendered-content code {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.82em;
+  background: #ede9df;
+  color: #4a3060;
+  padding: 1px 5px;
+  border-radius: 3px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+#rendered-content pre {
+  background: #1e1e2e;
+  border-radius: 6px;
+  padding: 16px 20px;
+  margin: 12px 0 16px;
+  overflow-x: auto;
+  border-left: 3px solid #7c8cf8;
+  white-space: pre-wrap;
+  word-break: break-word;
+  word-wrap: break-word;
+}
+
+#rendered-content pre code {
+  background: transparent;
+  color: #cdd6f4;
+  padding: 0;
+  font-size: 0.78em;
+  line-height: 1.6;
+  border-radius: 0;
+  white-space: pre-wrap;
+}
+
+#rendered-content blockquote {
+  margin: 12px 0 16px;
+  padding: 10px 18px;
+  border-left: 3px solid var(--accent);
+  background: rgba(232,180,75,0.06);
+  color: var(--ink-muted);
+  font-style: italic;
+}
+
+#rendered-content hr {
+  border: none;
+  border-top: 1.5px solid var(--rule);
+  margin: 24px 0;
+}
+
+#rendered-content a {
+  color: #4a6cf7;
+  text-decoration: underline;
+  text-decoration-color: rgba(74,108,247,0.3);
+}
+
+/* ─── Tables ─────────────────────────────────────────────── */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  margin: 12px 0 18px;
+}
+
+#rendered-content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Outfit', sans-serif;
+  font-size: 9.5pt;
+  table-layout: fixed;
+}
+
+#rendered-content th {
+  background: #1e1e2e;
+  color: #e0e2f0;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  font-size: 8.5pt;
+  text-transform: uppercase;
+  padding: 9px 12px;
+  text-align: left;
+  border: 1px solid #2e2e40;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+#rendered-content td {
+  padding: 8px 12px;
+  border: 1px solid var(--rule);
+  vertical-align: top;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
+#rendered-content tr:nth-child(even) td {
+  background: rgba(0,0,0,0.03);
+}
+
+/* ─── Math ───────────────────────────────────────────────── */
+.math-display {
+  margin: 18px 0;
+  text-align: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 10px 0;
+}
+
+.math-inline { display: inline; }
+
+.math-error {
+  color: #e06c75;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.82em;
+  background: rgba(224,108,117,0.1);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+/* ─── Status Bar ─────────────────────────────────────────── */
+#statusbar {
+  padding: 6px 20px;
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.status-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #4caf50;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.status-dot.idle { background: var(--muted); }
+
+/* ─── Print Styles ───────────────────────────────────────── */
+@media print {
+  html, body {
+    height: auto;
+    overflow: visible;
+    background: white;
+  }
+
+  #topbar, #editor-panel, #statusbar { display: none !important; }
+
+  #preview-panel {
+    display: block !important;
+    background: white;
+    overflow: visible;
+  }
+
+  #preview-scroll {
+    overflow: visible;
+    padding: 0;
+    display: block;
+    background: white;
+  }
+
+  #paper {
+    box-shadow: none;
+    border-radius: 0;
+    width: 100%;
+    max-width: 100%;
+    min-height: auto;
+    padding: 0;
+    animation: none;
+  }
+
+  @page {
+    margin: 2.2cm 2.5cm 2.5cm 2.5cm;
+    size: A4;
+  }
+
+  /* Page break rules */
+  h1, h2, h3, h4, h5, h6 {
+    break-after: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  p {
+    orphans: 3;
+    widows: 3;
+    break-inside: avoid;
+  }
+
+  ul, ol { break-inside: avoid; }
+  li { break-inside: avoid; }
+
+  /* ── Tables: allow page breaks between rows, never inside a row ── */
+  .table-wrapper {
+    overflow: visible !important;
+    /* NO break-inside:avoid — let the table split across pages */
+  }
+
+  table {
+    break-inside: auto !important;      /* table CAN cross a page boundary   */
+    width: 100% !important;
+    table-layout: fixed !important;
+  }
+
+  thead, .tbl-head {
+    display: table-header-group;        /* repeat header on every page        */
+  }
+
+  tfoot {
+    display: table-footer-group;
+  }
+
+  tr {
+    break-inside: avoid !important;     /* but never cut a row in half        */
+    break-after: auto !important;
+  }
+
+  td, th {
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    white-space: normal !important;
+  }
+
+  /* ── Math blocks: keep together ──────────────────────────── */
+  .math-display {
+    break-inside: avoid;
+    overflow: visible;
+  }
+
+  /* ── Code: wrap instead of overflow ──────────────────────── */
+  pre {
+    break-inside: avoid;
+    white-space: pre-wrap !important;
+    word-break: break-all !important;
+    overflow: visible !important;
+  }
+
+  /* ── Soft flow hints (orphans/widows) instead of hard avoid ─ */
+  p {
+    orphans: 3 !important;
+    widows: 3 !important;
+    break-inside: auto !important;      /* let text reflow naturally          */
+  }
+
+  blockquote { break-inside: avoid; }
+  li { break-inside: avoid; }
+
+  /* Fix code blocks for print */
+  #rendered-content pre {
+    background: #f4f4f8 !important;
+    color: #1a1a2e !important;
+    border-left: 3px solid #7c8cf8 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  #rendered-content pre code {
+    color: #1a1a2e !important;
+  }
+
+  #rendered-content th {
+    background: #2a2a3e !important;
+    color: #ffffff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  #rendered-content tr:nth-child(even) td {
+    background: #f7f7fb !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .katex-display {
+    overflow: visible !important;
+  }
+}
+
+/* ─── Scrollbar for preview ──────────────────────────────── */
+#preview-panel::-webkit-scrollbar { width: 6px; }
+#preview-panel::-webkit-scrollbar-track { background: transparent; }
+#preview-panel::-webkit-scrollbar-thumb { background: #2a2b38; border-radius: 10px; }
+
+/* ─── Hint tags ──────────────────────────────────────────── */
+.hint-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 0.68rem;
+  color: var(--muted);
+  font-family: 'Fira Code', monospace;
+}
+
+.hint-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Toast notification */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #1e2030;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 0.82rem;
+  color: var(--text);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all 0.25s;
+  pointer-events: none;
+  z-index: 999;
+}
+
+#toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
+</head>
+<body>
+
+<!-- ── Top Bar ──────────────────────────────────────────────────────── -->
+<div id="topbar">
+  <div class="logo">
+    <div class="logo-icon">∑</div>
+    AI <span>→</span> PDF
+  </div>
+  <div class="topbar-actions">
+    <button class="btn btn-ghost" onclick="clearAll()">Clear</button>
+    <button class="btn btn-ghost" onclick="loadExample()">Load Example</button>
+    <button class="btn btn-primary" onclick="exportPDF()">⬇ Export PDF</button>
+  </div>
+</div>
+
+<!-- ── Main ─────────────────────────────────────────────────────────── -->
+<div id="app">
+
+  <!-- Editor Panel -->
+  <div id="editor-panel">
+    <div class="panel-header">
+      <span>Input</span>
+      <span class="char-count" id="char-count">0 chars</span>
+    </div>
+
+    <div class="hint-tags">
+      <span class="hint-tag">$x^2$</span>
+      <span class="hint-tag">$$\int$$</span>
+      <span class="hint-tag">**bold**</span>
+      <span class="hint-tag">| table |</span>
+      <span class="hint-tag"># Heading</span>
+      <span class="hint-tag">```code```</span>
+    </div>
+
+    <textarea id="input-area"
+      placeholder="Paste your ChatGPT / Claude / Gemini response here…
+
+Supports:
+• Markdown (headings, bold, italic, lists)
+• Math equations: $inline$ and $$display$$
+• LaTeX: \( ... \) and \[ ... \]
+• Tables
+• Code blocks
+• Blockquotes"
+      oninput="onInput()"
+      onpaste="onInput()"
+    ></textarea>
+
+    <div class="editor-footer">
+      <div class="options-row">
+        <div class="opt-group">
+          <label class="opt-label">Document Title</label>
+          <input type="text" id="doc-title" class="opt-input" placeholder="Optional title…" oninput="renderPreview()">
+        </div>
+        <div class="opt-group" style="max-width:110px">
+          <label class="opt-label">Page Size</label>
+          <select id="page-size" class="opt-input" onchange="updatePageStyle()">
+            <option value="A4">A4</option>
+            <option value="letter">Letter</option>
+          </select>
+        </div>
+      </div>
+      <div class="options-row">
+        <div class="opt-group">
+          <label class="opt-label">Author / Date (optional)</label>
+          <input type="text" id="doc-meta" class="opt-input" placeholder="e.g. Jane Smith · April 2026">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview Panel -->
+  <div id="preview-panel">
+    <div class="panel-header">
+      <span>Preview</span>
+      <span style="font-size:0.68rem;color:var(--muted)" id="preview-hint">← Paste text to begin</span>
+    </div>
+
+    <div id="preview-scroll">
+      <div id="paper">
+        <div id="doc-title-display" style="display:none"></div>
+        <div id="doc-meta-display" style="display:none"></div>
+        <div id="rendered-content">
+          <div class="empty-state">
+            <div class="empty-icon">📄</div>
+            <h3>Your document will appear here</h3>
+            <p>Paste any AI response on the left — math, tables, code, and markdown are all handled.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Status Bar -->
+<div id="statusbar">
+  <div>
+    <span class="status-dot idle" id="status-dot"></span>
+    <span id="status-text">Ready</span>
+  </div>
+  <div>
+    <span id="word-count">0 words</span>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   Marked.js Configuration
+   ═══════════════════════════════════════════════════════════ */
+marked.setOptions({
+  breaks: true,
+  gfm: true,
+});
+
+// Custom table renderer to wrap in a div for overflow handling
+const renderer = new marked.Renderer();
+
+renderer.table = function(header, body) {
+  return `<div class="table-wrapper"><table><thead class="tbl-head">${header}</thead><tbody>${body}</tbody></table></div>`;
+};
+
+renderer.code = function(code, lang) {
+  const escaped = code
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+  const langClass = lang ? ` class="language-${lang}"` : '';
+  return `<pre><code${langClass}>${escaped}</code></pre>`;
+};
+
+marked.use({ renderer });
+
+/* ═══════════════════════════════════════════════════════════
+   Math Pre/Post Processing
+   ═══════════════════════════════════════════════════════════ */
+
+function extractMath(text) {
+  const blocks = [];
+
+  // 1. Display math: $$...$$
+  text = text.replace(/\$\$([\s\S]*?)\$\$/g, (_, math) => {
+    const id = blocks.length;
+    blocks.push({ display: true, math: math.trim() });
+    return `\x00MATH${id}\x00`;
+  });
+
+  // 2. LaTeX display: \[...\]
+  text = text.replace(/\\\[([\s\S]*?)\\\]/g, (_, math) => {
+    const id = blocks.length;
+    blocks.push({ display: true, math: math.trim() });
+    return `\x00MATH${id}\x00`;
+  });
+
+  // 3. LaTeX inline: \(...\)
+  text = text.replace(/\\\(([\s\S]*?)\\\)/g, (_, math) => {
+    const id = blocks.length;
+    blocks.push({ display: false, math: math.trim() });
+    return `\x00MATH${id}\x00`;
+  });
+
+  // 4. Inline math: $...$
+  // Avoid matching lone $ (prices etc.) by requiring non-space at edges
+  text = text.replace(/\$(?=[^\s$])([^$\n]+?)(?<=[^\s$])\$/g, (_, math) => {
+    // Extra guard: skip if it looks like a price ($5.00, $1,000)
+    if (/^\d[\d,\.]*$/.test(math.trim())) return `$${math}$`;
+    const id = blocks.length;
+    blocks.push({ display: false, math: math.trim() });
+    return `\x00MATH${id}\x00`;
+  });
+
+  return { text, blocks };
+}
+
+function restoreMathInHTML(html, blocks) {
+  // The placeholder \x00MATHn\x00 may be inside a <p> or mangled by marked
+  // marked sometimes encodes null bytes or leaves them; use a unique ASCII string
+  return html.replace(/\x00MATH(\d+)\x00/g, (_, idx) => {
+    const { display, math } = blocks[parseInt(idx)];
+    const safemath = math.replace(/"/g, '&quot;');
+    if (display) {
+      return `<div class="math-display" data-math="${safemath}" data-display="1"></div>`;
+    } else {
+      return `<span class="math-inline" data-math="${safemath}"></span>`;
+    }
+  });
+}
+
+function renderKatexInContainer(container) {
+  container.querySelectorAll('[data-math]').forEach(el => {
+    const math = el.getAttribute('data-math') || '';
+    const display = el.dataset.display === '1';
+    try {
+      katex.render(math, el, {
+        displayMode: display,
+        throwOnError: false,
+        trust: true,
+        strict: false,
+      });
+    } catch (e) {
+      el.innerHTML = `<span class="math-error" title="${e.message}">${math}</span>`;
+    }
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Main Render Pipeline
+   ═══════════════════════════════════════════════════════════ */
+
+let debounceTimer = null;
+
+function onInput() {
+  const area = document.getElementById('input-area');
+  const text = area.value;
+
+  // Update char count
+  document.getElementById('char-count').textContent =
+    text.length.toLocaleString() + ' chars';
+
+  // Debounce rendering
+  clearTimeout(debounceTimer);
+  setStatus('typing');
+  debounceTimer = setTimeout(() => renderPreview(), 380);
+}
+
+function renderPreview() {
+  const raw = document.getElementById('input-area').value.trim();
+  const titleVal = document.getElementById('doc-title').value.trim();
+  const metaVal = document.getElementById('doc-meta').value.trim();
+  const content = document.getElementById('rendered-content');
+
+  // Update word count
+  const words = raw ? raw.split(/\s+/).filter(Boolean).length : 0;
+  document.getElementById('word-count').textContent = words.toLocaleString() + ' words';
+
+  // Title & meta display
+  const titleEl = document.getElementById('doc-title-display');
+  const metaEl = document.getElementById('doc-meta-display');
+
+  if (titleVal) {
+    titleEl.textContent = titleVal;
+    titleEl.style.display = 'block';
+  } else {
+    titleEl.style.display = 'none';
+  }
+
+  if (metaVal) {
+    metaEl.textContent = metaVal;
+    metaEl.style.display = 'block';
+  } else {
+    metaEl.style.display = 'none';
+  }
+
+  if (!raw) {
+    content.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📄</div>
+        <h3>Your document will appear here</h3>
+        <p>Paste any AI response on the left — math, tables, code, and markdown are all handled.</p>
+      </div>`;
+    setStatus('ready');
+    document.getElementById('preview-hint').textContent = '← Paste text to begin';
+    return;
+  }
+
+  setStatus('rendering');
+
+  try {
+    // Step 1: Extract math blocks
+    const { text: safeText, blocks } = extractMath(raw);
+
+    // Step 2: Parse markdown
+    let html = marked.parse(safeText);
+
+    // Step 3: Restore math placeholders
+    html = restoreMathInHTML(html, blocks);
+
+    // Step 4: Set HTML
+    content.innerHTML = html;
+
+    // Step 5: Render KaTeX
+    renderKatexInContainer(content);
+
+    const pageHint = words + ' words · ' + countMath(content) + ' equations · ' + countTables(content) + ' tables';
+    document.getElementById('preview-hint').textContent = pageHint;
+    setStatus('done');
+  } catch (e) {
+    content.innerHTML = `<p style="color:#e06c75">Render error: ${e.message}</p>`;
+    setStatus('error');
+  }
+}
+
+function countMath(container) {
+  return container.querySelectorAll('.math-display, .math-inline').length;
+}
+
+function countTables(container) {
+  return container.querySelectorAll('table').length;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Export PDF
+   ═══════════════════════════════════════════════════════════ */
+
+function exportPDF() {
+  if (!document.getElementById('input-area').value.trim()) {
+    showToast('⚠ Nothing to export — paste some content first.');
+    return;
+  }
+
+  // Make sure latest is rendered
+  renderPreview();
+
+  setTimeout(() => {
+    window.print();
+    showToast('✓ Print dialog opened — choose "Save as PDF"');
+  }, 100);
+}
+
+function updatePageStyle() {
+  const size = document.getElementById('page-size').value;
+  // Update @page dynamically
+  let styleEl = document.getElementById('dynamic-page-style');
+  if (!styleEl) {
+    styleEl = document.createElement('style');
+    styleEl.id = 'dynamic-page-style';
+    document.head.appendChild(styleEl);
+  }
+  styleEl.textContent = `@media print { @page { size: ${size}; } }`;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Utilities
+   ═══════════════════════════════════════════════════════════ */
+
+function setStatus(state) {
+  const dot = document.getElementById('status-dot');
+  const txt = document.getElementById('status-text');
+  const states = {
+    ready:     { color: 'var(--muted)', text: 'Ready' },
+    typing:    { color: '#e8b44b',      text: 'Typing…' },
+    rendering: { color: '#7c8cf8',      text: 'Rendering…' },
+    done:      { color: '#4caf50',      text: 'Rendered' },
+    error:     { color: '#e06c75',      text: 'Error' },
+  };
+  const s = states[state] || states.ready;
+  dot.style.background = s.color;
+  txt.textContent = s.text;
+}
+
+function clearAll() {
+  document.getElementById('input-area').value = '';
+  document.getElementById('doc-title').value = '';
+  document.getElementById('doc-meta').value = '';
+  document.getElementById('char-count').textContent = '0 chars';
+  document.getElementById('word-count').textContent = '0 words';
+  renderPreview();
+  showToast('✓ Cleared');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Example Content
+   ═══════════════════════════════════════════════════════════ */
+
+function loadExample() {
+  document.getElementById('doc-title').value = 'Calculus & Linear Algebra — Quick Reference';
+  document.getElementById('doc-meta').value = 'Generated by Claude · April 2026';
+
+  document.getElementById('input-area').value = `## 1. Derivatives
+
+The **derivative** of a function $f(x)$ is defined as the limit:
+
+$$f'(x) = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h}$$
+
+### Common Derivative Rules
+
+| Rule | Formula |
+|------|---------|
+| Power Rule | $\\frac{d}{dx} x^n = nx^{n-1}$ |
+| Product Rule | $\\frac{d}{dx}[uv] = u'v + uv'$ |
+| Chain Rule | $\\frac{d}{dx}[f(g(x))] = f'(g(x))\\cdot g'(x)$ |
+| Quotient Rule | $\\frac{d}{dx}\\left[\\frac{u}{v}\\right] = \\frac{u'v - uv'}{v^2}$ |
+
+## 2. Integration
+
+The **fundamental theorem of calculus** connects differentiation and integration:
+
+$$\\int_a^b f'(x)\\,dx = f(b) - f(a)$$
+
+Some important integrals:
+
+$$\\int e^x\\,dx = e^x + C, \\quad \\int \\sin x\\,dx = -\\cos x + C$$
+
+$$\\int \\frac{1}{x}\\,dx = \\ln|x| + C, \\quad \\int x^n\\,dx = \\frac{x^{n+1}}{n+1} + C \\quad (n \\neq -1)$$
+
+## 3. Linear Algebra
+
+### Matrix Multiplication
+
+For matrices $A \\in \\mathbb{R}^{m \\times k}$ and $B \\in \\mathbb{R}^{k \\times n}$:
+
+$$(AB)_{ij} = \\sum_{l=1}^{k} A_{il} B_{lj}$$
+
+### Eigenvalues
+
+The eigenvalues $\\lambda$ of a matrix $A$ satisfy the characteristic equation:
+
+$$\\det(A - \\lambda I) = 0$$
+
+For a $2 \\times 2$ matrix $A = \\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$:
+
+$$\\lambda = \\frac{(a+d) \\pm \\sqrt{(a-d)^2 + 4bc}}{2}$$
+
+### Key Matrix Properties
+
+| Property | Condition |
+|----------|-----------|
+| Symmetric | $A = A^T$ |
+| Orthogonal | $A^T A = I$ |
+| Positive Definite | $x^T A x > 0 \\; \\forall x \\neq 0$ |
+| Singular | $\\det(A) = 0$ |
+
+## 4. Series & Convergence
+
+The **Taylor series** of $f(x)$ around $x = a$:
+
+$$f(x) = \\sum_{n=0}^{\\infty} \\frac{f^{(n)}(a)}{n!}(x-a)^n$$
+
+Notable examples:
+
+$$e^x = 1 + x + \\frac{x^2}{2!} + \\frac{x^3}{3!} + \\cdots = \\sum_{n=0}^{\\infty} \\frac{x^n}{n!}$$
+
+$$\\sin x = x - \\frac{x^3}{3!} + \\frac{x^5}{5!} - \\cdots = \\sum_{n=0}^{\\infty} \\frac{(-1)^n x^{2n+1}}{(2n+1)!}$$
+
+## 5. Code Example
+
+Here's a Python snippet to compute eigenvalues using NumPy:
+
+\`\`\`python
+import numpy as np
+
+A = np.array([[4, 2],
+              [1, 3]])
+
+eigenvalues, eigenvectors = np.linalg.eig(A)
+print("Eigenvalues:", eigenvalues)
+# Output: Eigenvalues: [5. 2.]
+\`\`\`
+
+> **Note:** For large matrices, use \`scipy.sparse.linalg.eigs\` for better performance on sparse systems.
+`;
+
+  onInput();
+  showToast('✓ Example loaded');
+}
+
+// Init
+updatePageStyle();
+setStatus('ready');
+</script>
+</body>
+</html>
