@@ -680,7 +680,7 @@ marked.setOptions({
 const renderer = new marked.Renderer();
 
 renderer.table = function(header, body) {
-  return `<div class="table-wrapper"><table><thead class="tbl-head">${header}</thead><tbody>${body}</tbody></table></div>`;
+  return `<div class="table-wrapper"><tr><thead class="tbl-head">${header}</thead><tbody>${body}</tbody></table></div>`;
 };
 
 renderer.code = function(code, lang) {
@@ -698,24 +698,48 @@ marked.use({ renderer });
    Math Pre/Post Processing
    ═══════════════════════════════════════════════════════════ */
 
+// Enhanced fix for ChatGPT-style math delimiters
 function fixCommonMathDelimiters(text) {
-  // Convert [ ... ] on a line by itself to \[ ... \]
-  // Matches lines that start with optional whitespace, then '[', then any content, then ']', then optional whitespace and end of line
-  text = text.replace(/^\s*\[([\s\S]*?)\]\s*$/gm, (match, content) => {
-    // Only convert if the content looks like it contains LaTeX (has backslashes, ^, _, etc.)
-    // This avoids converting plain text like "[Note]"
-    if (/[\\^_{}]/.test(content) || /\b(frac|int|sum|lim|sqrt|alpha|beta|gamma|sin|cos|tan|log|ln|det|pmatrix|begin|end)\b/i.test(content)) {
-      return `\\[ ${content.trim()} \\]`;
+  // Split into lines to detect code blocks
+  const lines = text.split('\n');
+  let inCodeBlock = false;
+  const processed = lines.map(line => {
+    // Toggle code block state (fenced with ```)
+    if (line.trim().startsWith('```')) {
+      inCodeBlock = !inCodeBlock;
+      return line; // do not modify code fence lines
     }
-    return match; // leave as is if it's not math
+    if (inCodeBlock) return line; // leave code block content untouched
+
+    // First handle headings that start with '# [ ... ]'
+    let newLine = line;
+    if (line.trim().startsWith('#') && line.includes('[')) {
+      newLine = newLine.replace(/^(\s*#+\s*)\[([\s\S]*?)\]/g, (_, hash, content) => {
+        if (/[\\^_{}]/.test(content) || /\b(frac|int|sum|lim|sqrt|alpha|beta|gamma|sin|cos|tan|log|ln|det|pmatrix|begin|end)\b/i.test(content)) {
+          return `${hash}\\[ ${content.trim()} \\]`;
+        }
+        return _;
+      });
+    }
+
+    // Convert any remaining [ ... ] (not already converted to \[ ... \])
+    // Use a regex that matches brackets not preceded by backslash (so not escaped)
+    newLine = newLine.replace(/(?<!\\)\[([\s\S]*?)(?<!\\)\]/g, (match, content) => {
+      // Skip if it's a markdown link [text](url) - look ahead for ( after the closing ]
+      // But we can't easily look ahead here. Instead check content for LaTeX patterns.
+      if (/[\\^_{}]/.test(content) || /\b(frac|int|sum|lim|sqrt|alpha|beta|gamma|sin|cos|tan|log|ln|det|pmatrix|begin|end)\b/i.test(content)) {
+        // Convert to display math if it's likely a block, else inline? We'll use display math.
+        // But if the brackets are inside a sentence, display math may break layout.
+        // For simplicity, we convert to \[ \] (display). Most ChatGPT outputs use brackets on separate lines.
+        return `\\[ ${content.trim()} \\]`;
+      }
+      return match;
+    });
+    return newLine;
   });
-  
-  // Optional: convert ( ... ) on its own line to \( ... \) for inline?
-  // But that's riskier. We'll skip for now.
-  
-  return text;
+  return processed.join('\n');
 }
-  
+
 function extractMath(text) {
   const blocks = [];
 
