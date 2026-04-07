@@ -556,6 +556,17 @@ select.opt-input { cursor: pointer; }
     size: A4;
   }
 
+  /* 🔥 NEW: Remove any possible red icons or markers */
+  *::before, *::after {
+    content: none !important;
+  }
+  * {
+    position: static !important;
+  }
+  .status-dot, .sdot, [class*="dot"], [class*="status"] {
+    display: none !important;
+  }
+
   /* Headings: keep with next content, avoid breaking inside */
   h1, h2, h3, h4, h5, h6 {
     break-after: avoid !important;
