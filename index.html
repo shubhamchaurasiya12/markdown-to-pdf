@@ -556,14 +556,6 @@ select.opt-input { cursor: pointer; }
     size: A4;
   }
 
-  /* 🔥 NEW: Hide extension icons and any stray elements outside the paper content */
-  body > :not(#preview-panel),
-  #preview-panel > :not(#preview-scroll),
-  #preview-scroll > :not(#paper),
-  #paper > :not(#doc-title-display, #doc-meta-display, #rendered-content) {
-    display: none !important;
-  }
-
   /* Headings: keep with next content, avoid breaking inside */
   h1, h2, h3, h4, h5, h6 {
     break-after: avoid !important;
