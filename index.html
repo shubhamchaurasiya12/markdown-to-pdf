@@ -698,6 +698,24 @@ marked.use({ renderer });
    Math Pre/Post Processing
    ═══════════════════════════════════════════════════════════ */
 
+function fixCommonMathDelimiters(text) {
+  // Convert [ ... ] on a line by itself to \[ ... \]
+  // Matches lines that start with optional whitespace, then '[', then any content, then ']', then optional whitespace and end of line
+  text = text.replace(/^\s*\[([\s\S]*?)\]\s*$/gm, (match, content) => {
+    // Only convert if the content looks like it contains LaTeX (has backslashes, ^, _, etc.)
+    // This avoids converting plain text like "[Note]"
+    if (/[\\^_{}]/.test(content) || /\b(frac|int|sum|lim|sqrt|alpha|beta|gamma|sin|cos|tan|log|ln|det|pmatrix|begin|end)\b/i.test(content)) {
+      return `\\[ ${content.trim()} \\]`;
+    }
+    return match; // leave as is if it's not math
+  });
+  
+  // Optional: convert ( ... ) on its own line to \( ... \) for inline?
+  // But that's riskier. We'll skip for now.
+  
+  return text;
+}
+  
 function extractMath(text) {
   const blocks = [];
 
@@ -783,7 +801,7 @@ function onInput() {
 }
 
 async function renderPreview() {
-  const raw = document.getElementById('input-area').value.trim();
+  let raw = document.getElementById('input-area').value.trim();
   const titleVal = document.getElementById('doc-title').value.trim();
   const metaVal = document.getElementById('doc-meta').value.trim();
   const content = document.getElementById('rendered-content');
@@ -825,6 +843,9 @@ async function renderPreview() {
   setStatus('rendering');
 
   try {
+    // 🔥 Auto-fix ChatGPT-style math delimiters before extraction
+    raw = fixCommonMathDelimiters(raw);
+
     // Step 1: Extract math blocks
     const { text: safeText, blocks } = extractMath(raw);
 
