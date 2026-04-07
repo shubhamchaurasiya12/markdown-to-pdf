@@ -303,7 +303,7 @@ select.opt-input { cursor: pointer; }
   margin-bottom: 6px;
 }
 
-#doc-meta {
+#doc-meta-display {
   font-family: 'Outfit', sans-serif;
   font-size: 8.5pt;
   color: var(--ink-muted);
@@ -568,20 +568,18 @@ select.opt-input { cursor: pointer; }
   ul, ol { break-inside: avoid; }
   li { break-inside: avoid; }
 
-  /* ── Tables: allow page breaks between rows, never inside a row ── */
   .table-wrapper {
     overflow: visible !important;
-    /* NO break-inside:avoid — let the table split across pages */
   }
 
   table {
-    break-inside: auto !important;      /* table CAN cross a page boundary   */
+    break-inside: auto !important;
     width: 100% !important;
     table-layout: fixed !important;
   }
 
   thead, .tbl-head {
-    display: table-header-group;        /* repeat header on every page        */
+    display: table-header-group;
   }
 
   tfoot {
@@ -589,7 +587,7 @@ select.opt-input { cursor: pointer; }
   }
 
   tr {
-    break-inside: avoid !important;     /* but never cut a row in half        */
+    break-inside: avoid !important;
     break-after: auto !important;
   }
 
@@ -599,13 +597,11 @@ select.opt-input { cursor: pointer; }
     white-space: normal !important;
   }
 
-  /* ── Math blocks: keep together ──────────────────────────── */
   .math-display {
     break-inside: avoid;
     overflow: visible;
   }
 
-  /* ── Code: wrap instead of overflow ──────────────────────── */
   pre {
     break-inside: avoid;
     white-space: pre-wrap !important;
@@ -613,17 +609,15 @@ select.opt-input { cursor: pointer; }
     overflow: visible !important;
   }
 
-  /* ── Soft flow hints (orphans/widows) instead of hard avoid ─ */
   p {
     orphans: 3 !important;
     widows: 3 !important;
-    break-inside: auto !important;      /* let text reflow naturally          */
+    break-inside: auto !important;
   }
 
   blockquote { break-inside: avoid; }
   li { break-inside: avoid; }
 
-  /* Fix code blocks for print */
   #rendered-content pre {
     background: #f4f4f8 !important;
     color: #1a1a2e !important;
@@ -770,7 +764,7 @@ Supports:
       <div class="options-row">
         <div class="opt-group">
           <label class="opt-label">Author / Date (optional)</label>
-          <input type="text" id="doc-meta" class="opt-input" placeholder="e.g. Jane Smith · April 2026">
+          <input type="text" id="doc-meta" class="opt-input" placeholder="e.g. Jane Smith · April 2026" oninput="renderPreview()">
         </div>
       </div>
     </div>
@@ -812,7 +806,7 @@ Supports:
 </div>
 
 <!-- Toast -->
-<div id="toast" id="toast"></div>
+<div id="toast"></div>
 
 <script>
 /* ═══════════════════════════════════════════════════════════
@@ -827,7 +821,7 @@ marked.setOptions({
 const renderer = new marked.Renderer();
 
 renderer.table = function(header, body) {
-  return `<div class="table-wrapper"><table><thead class="tbl-head">${header}</thead><tbody>${body}</tbody></table></div>`;
+  return `<div class="table-wrapper"><tr><thead class="tbl-head">${header}</thead><tbody>${body}</tbody></table></div>`;
 };
 
 renderer.code = function(code, lang) {
@@ -883,8 +877,6 @@ function extractMath(text) {
 }
 
 function restoreMathInHTML(html, blocks) {
-  // The placeholder \x00MATHn\x00 may be inside a <p> or mangled by marked
-  // marked sometimes encodes null bytes or leaves them; use a unique ASCII string
   return html.replace(/\x00MATH(\d+)\x00/g, (_, idx) => {
     const { display, math } = blocks[parseInt(idx)];
     const safemath = math.replace(/"/g, '&quot;');
@@ -914,7 +906,7 @@ function renderKatexInContainer(container) {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   Main Render Pipeline
+   Main Render Pipeline (async for marked.parse)
    ═══════════════════════════════════════════════════════════ */
 
 let debounceTimer = null;
@@ -933,7 +925,7 @@ function onInput() {
   debounceTimer = setTimeout(() => renderPreview(), 380);
 }
 
-function renderPreview() {
+async function renderPreview() {
   const raw = document.getElementById('input-area').value.trim();
   const titleVal = document.getElementById('doc-title').value.trim();
   const metaVal = document.getElementById('doc-meta').value.trim();
@@ -979,8 +971,8 @@ function renderPreview() {
     // Step 1: Extract math blocks
     const { text: safeText, blocks } = extractMath(raw);
 
-    // Step 2: Parse markdown
-    let html = marked.parse(safeText);
+    // Step 2: Parse markdown (async)
+    let html = await marked.parse(safeText);
 
     // Step 3: Restore math placeholders
     html = restoreMathInHTML(html, blocks);
@@ -995,6 +987,7 @@ function renderPreview() {
     document.getElementById('preview-hint').textContent = pageHint;
     setStatus('done');
   } catch (e) {
+    console.error(e);
     content.innerHTML = `<p style="color:#e06c75">Render error: ${e.message}</p>`;
     setStatus('error');
   }
@@ -1009,17 +1002,17 @@ function countTables(container) {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   Export PDF
+   Export PDF (via browser print)
    ═══════════════════════════════════════════════════════════ */
 
-function exportPDF() {
+async function exportPDF() {
   if (!document.getElementById('input-area').value.trim()) {
     showToast('⚠ Nothing to export — paste some content first.');
     return;
   }
 
   // Make sure latest is rendered
-  renderPreview();
+  await renderPreview();
 
   setTimeout(() => {
     window.print();
@@ -1029,7 +1022,6 @@ function exportPDF() {
 
 function updatePageStyle() {
   const size = document.getElementById('page-size').value;
-  // Update @page dynamically
   let styleEl = document.getElementById('dynamic-page-style');
   if (!styleEl) {
     styleEl = document.createElement('style');
