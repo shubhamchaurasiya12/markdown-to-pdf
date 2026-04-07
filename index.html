@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>PasteToPDF</title>
 
 <!-- Favicon -->
@@ -57,7 +57,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
+  padding: 0 20px;
   height: 54px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
@@ -68,9 +68,9 @@ body {
 .logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   font-family: 'DM Serif Display', serif;
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   letter-spacing: 0.01em;
   color: #e8e9ef;
 }
@@ -88,18 +88,17 @@ body {
 
 .logo span { color: var(--accent); }
 
-.topbar-actions { display: flex; gap: 10px; align-items: center; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
 
 .btn {
-  padding: 7px 16px;
+  padding: 6px 14px;
   border-radius: 7px;
   font-family: 'Outfit', sans-serif;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 500;
   border: none;
   cursor: pointer;
   transition: all 0.18s;
-  letter-spacing: 0.02em;
 }
 
 .btn-ghost {
@@ -136,8 +135,8 @@ body {
 }
 
 .panel-header {
-  padding: 14px 20px 10px;
-  font-size: 0.72rem;
+  padding: 12px 16px;
+  font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -155,10 +154,10 @@ body {
   background: transparent;
   border: none;
   outline: none;
-  padding: 20px;
+  padding: 16px;
   font-family: 'Fira Code', monospace;
-  font-size: 0.8rem;
-  line-height: 1.65;
+  font-size: 0.78rem;
+  line-height: 1.6;
   color: #9ea3be;
   caret-color: var(--accent);
   overflow-y: auto;
@@ -170,7 +169,7 @@ body {
 #input-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
 
 .editor-footer {
-  padding: 12px 20px;
+  padding: 12px 16px;
   border-top: 1px solid var(--border);
   display: flex;
   flex-direction: column;
@@ -180,7 +179,7 @@ body {
 
 .options-row {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
 }
 
@@ -192,9 +191,9 @@ body {
 }
 
 .opt-label {
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
 }
@@ -203,19 +202,19 @@ body {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 6px;
-  padding: 6px 10px;
+  padding: 5px 8px;
   color: var(--text);
   font-family: 'Outfit', sans-serif;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   outline: none;
   width: 100%;
-  transition: border-color 0.15s;
 }
+
 .opt-input:focus { border-color: var(--accent2); }
 
 select.opt-input { cursor: pointer; }
 
-.char-count {
+.char-count, .word-count {
   font-size: 0.7rem;
   color: var(--muted);
 }
@@ -232,7 +231,7 @@ select.opt-input { cursor: pointer; }
 #preview-scroll {
   flex: 1;
   overflow-y: auto;
-  padding: 40px;
+  padding: 24px;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -248,23 +247,14 @@ select.opt-input { cursor: pointer; }
   color: var(--ink);
   width: 100%;
   max-width: 760px;
-  min-height: 1050px;
+  min-height: 900px;
   border-radius: 3px;
-  box-shadow:
-    0 2px 8px rgba(0,0,0,0.4),
-    0 20px 60px rgba(0,0,0,0.5),
-    0 0 0 0.5px rgba(255,255,255,0.03);
-  padding: 72px 80px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4), 0 20px 60px rgba(0,0,0,0.5);
+  padding: 56px 64px;
   font-family: 'Lora', serif;
   font-size: 11pt;
   line-height: 1.75;
-  position: relative;
-  animation: paperIn 0.3s ease;
-}
-
-@keyframes paperIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  transition: all 0.2s;
 }
 
 /* ─── Empty State ────────────────────────────────────────── */
@@ -273,116 +263,47 @@ select.opt-input { cursor: pointer; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 600px;
+  min-height: 500px;
   gap: 12px;
-  color: var(--ink-muted);
   text-align: center;
   font-family: 'Outfit', sans-serif;
-}
-
-.empty-icon {
-  font-size: 3rem;
-  margin-bottom: 8px;
-  opacity: 0.35;
-}
-
-.empty-state h3 {
-  font-size: 1rem;
-  font-weight: 600;
   color: var(--ink-muted);
-  font-family: 'Outfit', sans-serif;
 }
-
-.empty-state p {
-  font-size: 0.82rem;
-  color: #9090a0;
-  max-width: 300px;
-  line-height: 1.5;
-  font-family: 'Outfit', sans-serif;
-}
+.empty-icon { font-size: 2.8rem; opacity: 0.35; }
+.empty-state h3 { font-size: 1rem; font-weight: 600; }
+.empty-state p { font-size: 0.8rem; max-width: 280px; }
 
 /* ─── Document Content Styles ────────────────────────────── */
 #doc-title-display {
   font-family: 'DM Serif Display', serif;
   font-size: 24pt;
   line-height: 1.2;
-  color: #111118;
   margin-bottom: 6px;
+  color: #111118;
 }
-
-#doc-meta {
+#doc-meta-display {
   font-family: 'Outfit', sans-serif;
   font-size: 8.5pt;
   color: var(--ink-muted);
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  margin-bottom: 32px;
-  padding-bottom: 20px;
+  margin-bottom: 28px;
+  padding-bottom: 18px;
   border-bottom: 1.5px solid var(--rule);
 }
 
-#rendered-content h1 {
+#rendered-content h1, #rendered-content h2, #rendered-content h3, #rendered-content h4 {
   font-family: 'DM Serif Display', serif;
-  font-size: 20pt;
-  font-weight: 400;
-  color: #111118;
-  margin: 28px 0 10px;
-  line-height: 1.25;
-}
-
-#rendered-content h2 {
-  font-family: 'DM Serif Display', serif;
-  font-size: 15pt;
-  font-weight: 400;
   color: #111118;
   margin: 24px 0 8px;
-  line-height: 1.3;
+  line-height: 1.25;
 }
-
-#rendered-content h3 {
-  font-family: 'Outfit', sans-serif;
-  font-size: 11pt;
-  font-weight: 700;
-  color: #1a1a26;
-  margin: 20px 0 6px;
-  letter-spacing: 0.01em;
-}
-
-#rendered-content h4 {
-  font-family: 'Outfit', sans-serif;
-  font-size: 10pt;
-  font-weight: 700;
-  color: #2a2a3a;
-  margin: 16px 0 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-#rendered-content p {
-  margin: 0 0 12px;
-  orphans: 3;
-  widows: 3;
-}
-
-#rendered-content ul, #rendered-content ol {
-  margin: 0 0 12px 0;
-  padding-left: 26px;
-}
-
-#rendered-content li {
-  margin-bottom: 4px;
-  line-height: 1.65;
-}
-
-#rendered-content li > ul,
-#rendered-content li > ol {
-  margin-top: 4px;
-  margin-bottom: 4px;
-}
-
-#rendered-content strong { font-weight: 600; color: #111118; }
-#rendered-content em { font-style: italic; }
-
+#rendered-content h1 { font-size: 20pt; }
+#rendered-content h2 { font-size: 15pt; }
+#rendered-content h3 { font-size: 12pt; font-family: 'Outfit', sans-serif; font-weight: 700; }
+#rendered-content p { margin: 0 0 12px; }
+#rendered-content ul, #rendered-content ol { margin: 0 0 12px 0; padding-left: 26px; }
+#rendered-content li { margin-bottom: 4px; line-height: 1.65; }
 #rendered-content code {
   font-family: 'Fira Code', monospace;
   font-size: 0.82em;
@@ -390,128 +311,70 @@ select.opt-input { cursor: pointer; }
   color: #4a3060;
   padding: 1px 5px;
   border-radius: 3px;
-  white-space: pre-wrap;
-  word-break: break-word;
 }
-
 #rendered-content pre {
   background: #1e1e2e;
   border-radius: 6px;
-  padding: 16px 20px;
+  padding: 14px 18px;
   margin: 12px 0 16px;
   overflow-x: auto;
   border-left: 3px solid #7c8cf8;
   white-space: pre-wrap;
   word-break: break-word;
-  word-wrap: break-word;
 }
-
 #rendered-content pre code {
   background: transparent;
   color: #cdd6f4;
   padding: 0;
   font-size: 0.78em;
   line-height: 1.6;
-  border-radius: 0;
-  white-space: pre-wrap;
 }
-
 #rendered-content blockquote {
-  margin: 12px 0 16px;
-  padding: 10px 18px;
+  margin: 12px 0;
+  padding: 8px 16px;
   border-left: 3px solid var(--accent);
   background: rgba(232,180,75,0.06);
-  color: var(--ink-muted);
   font-style: italic;
 }
-
-#rendered-content hr {
-  border: none;
-  border-top: 1.5px solid var(--rule);
-  margin: 24px 0;
-}
-
-#rendered-content a {
-  color: #4a6cf7;
-  text-decoration: underline;
-  text-decoration-color: rgba(74,108,247,0.3);
-}
-
-/* ─── Tables ─────────────────────────────────────────────── */
-.table-wrapper {
-  width: 100%;
-  overflow-x: auto;
-  margin: 12px 0 18px;
-}
-
 #rendered-content table {
   width: 100%;
   border-collapse: collapse;
   font-family: 'Outfit', sans-serif;
   font-size: 9.5pt;
-  table-layout: fixed;
+  margin: 12px 0;
 }
-
 #rendered-content th {
   background: #1e1e2e;
   color: #e0e2f0;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  font-size: 8.5pt;
-  text-transform: uppercase;
-  padding: 9px 12px;
+  padding: 8px 10px;
   text-align: left;
   border: 1px solid #2e2e40;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
 }
-
 #rendered-content td {
-  padding: 8px 12px;
+  padding: 6px 10px;
   border: 1px solid var(--rule);
   vertical-align: top;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  min-width: 0;
 }
+#rendered-content tr:nth-child(even) td { background: rgba(0,0,0,0.03); }
 
-#rendered-content tr:nth-child(even) td {
-  background: rgba(0,0,0,0.03);
-}
+.table-wrapper { overflow-x: auto; margin: 12px 0; }
 
-/* ─── Math ───────────────────────────────────────────────── */
-.math-display {
-  margin: 18px 0;
-  text-align: center;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 10px 0;
-}
-
+.math-display { margin: 18px 0; text-align: center; overflow-x: auto; }
 .math-inline { display: inline; }
-
-.math-error {
-  color: #e06c75;
-  font-family: 'Fira Code', monospace;
-  font-size: 0.82em;
-  background: rgba(224,108,117,0.1);
-  padding: 2px 6px;
-  border-radius: 3px;
-}
+.math-error { color: #e06c75; background: rgba(224,108,117,0.1); padding: 2px 6px; border-radius: 3px; }
 
 /* ─── Status Bar ─────────────────────────────────────────── */
 #statusbar {
-  padding: 6px 20px;
+  padding: 5px 16px;
   background: var(--panel);
   border-top: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: var(--muted);
 }
-
 .status-dot {
   width: 6px; height: 6px;
   border-radius: 50%;
@@ -519,143 +382,26 @@ select.opt-input { cursor: pointer; }
   display: inline-block;
   margin-right: 6px;
 }
-
 .status-dot.idle { background: var(--muted); }
 
-/* ─── Print Styles ───────────────────────────────────────── */
-@media print {
-  html, body {
-    height: auto;
-    overflow: visible;
-    background: white;
-  }
-
-  /* Hide all UI chrome including the "Preview" header */
-  #topbar, #editor-panel, #statusbar, .panel-header {
-    display: none !important;
-  }
-
-  #preview-panel {
-    display: block !important;
-    background: white;
-    overflow: visible;
-  }
-
-  #preview-scroll {
-    overflow: visible;
-    padding: 0;
-    display: block;
-    background: white;
-  }
-
-  #paper {
-    box-shadow: none;
-    border-radius: 0;
-    width: 100%;
-    max-width: 100%;
-    min-height: auto;
-    padding: 0;
-    animation: none;
-  }
-
-  @page {
-    margin: 2.2cm 2.5cm 2.5cm 2.5cm;
-    size: A4;
-  }
-
-  /* Headings: keep with next content, avoid breaking inside */
-  h1, h2, h3, h4, h5, h6 {
-    break-after: avoid !important;
-    break-inside: avoid !important;
-  }
-
-  /* Paragraphs: allow natural breaks (no forced gaps) */
-  p {
-    orphans: 3;
-    widows: 3;
-    break-inside: auto !important;
-  }
-
-  /* Lists: allow breaks between items, but keep each item together */
-  ul, ol {
-    break-inside: auto !important;
-  }
-  li {
-    break-inside: avoid !important;
-  }
-
-  /* Tables: allow page breaks between rows, repeat header */
-  .table-wrapper {
-    overflow: visible !important;
-  }
-  table {
-    break-inside: auto !important;
-    width: 100% !important;
-    table-layout: fixed !important;
-  }
-  thead, .tbl-head {
-    display: table-header-group;
-  }
-  tfoot {
-    display: table-footer-group;
-  }
-  tr {
-    break-inside: avoid !important;
-    break-after: auto !important;
-  }
-  td, th {
-    word-wrap: break-word !important;
-    overflow-wrap: break-word !important;
-    white-space: normal !important;
-  }
-
-  /* Math blocks: keep together */
-  .math-display {
-    break-inside: avoid;
-    overflow: visible;
-  }
-
-  /* Code blocks: allow breaking across pages (no gap) */
-  pre {
-    break-inside: auto !important;
-    white-space: pre-wrap !important;
-    word-break: break-word !important;
-    overflow: visible !important;
-  }
-
-  blockquote { break-inside: avoid; }
-
-  /* Preserve colors and backgrounds */
-  #rendered-content pre {
-    background: #f4f4f8 !important;
-    color: #1a1a2e !important;
-    border-left: 3px solid #7c8cf8 !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  #rendered-content pre code {
-    color: #1a1a2e !important;
-  }
-  #rendered-content th {
-    background: #2a2a3e !important;
-    color: #ffffff !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  #rendered-content tr:nth-child(even) td {
-    background: #f7f7fb !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  .katex-display {
-    overflow: visible !important;
-  }
+/* ─── Toast ──────────────────────────────────────────────── */
+#toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #1e2030;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  color: var(--text);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all 0.2s;
+  pointer-events: none;
+  z-index: 999;
 }
-
-/* ─── Scrollbar for preview ──────────────────────────────── */
-#preview-panel::-webkit-scrollbar { width: 6px; }
-#preview-panel::-webkit-scrollbar-track { background: transparent; }
-#preview-panel::-webkit-scrollbar-thumb { background: #2a2b38; border-radius: 10px; }
+#toast.show { opacity: 1; transform: translateY(0); }
 
 /* ─── Hint tags ──────────────────────────────────────────── */
 .hint-tag {
@@ -670,36 +416,145 @@ select.opt-input { cursor: pointer; }
   color: var(--muted);
   font-family: 'Fira Code', monospace;
 }
-
 .hint-tags {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
-  padding: 10px 20px;
+  padding: 10px 16px;
   border-bottom: 1px solid var(--border);
 }
 
-/* Toast notification */
-#toast {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  background: #1e2030;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px 16px;
-  font-size: 0.82rem;
-  color: var(--text);
-  opacity: 0;
-  transform: translateY(8px);
-  transition: all 0.25s;
-  pointer-events: none;
-  z-index: 999;
+/* ─── Mobile Responsive ──────────────────────────────────── */
+@media (max-width: 700px) {
+  #app {
+    flex-direction: column;
+  }
+  #editor-panel {
+    width: 100%;
+    height: 45%;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+  #preview-panel {
+    height: 55%;
+  }
+  #preview-scroll {
+    padding: 16px;
+  }
+  #paper {
+    padding: 32px 24px;
+    min-height: auto;
+  }
+  .topbar-actions .btn-ghost:first-child {
+    display: none; /* hide "Clear" on very small screens to save space */
+  }
+  .opt-group:first-child {
+    flex: 2;
+  }
+  .panel-header {
+    padding: 10px 12px;
+  }
+  .hint-tags {
+    padding: 6px 12px;
+  }
+  .hint-tag {
+    font-size: 0.6rem;
+    padding: 2px 6px;
+  }
+  #input-area {
+    padding: 12px;
+    font-size: 0.75rem;
+  }
+  .btn {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+  }
 }
 
-#toast.show {
-  opacity: 1;
-  transform: translateY(0);
+@media (max-width: 480px) {
+  #paper {
+    padding: 24px 16px;
+  }
+  .logo span:first-of-type {
+    display: none; /* shorten logo text */
+  }
+  .btn-primary {
+    padding: 5px 10px;
+    font-size: 0.7rem;
+  }
+  .status-dot {
+    width: 5px;
+    height: 5px;
+  }
+  #statusbar {
+    font-size: 0.6rem;
+    padding: 4px 12px;
+  }
+}
+
+/* ─── Print Styles (clean, no UI, works on mobile) ───────── */
+@media print {
+  html, body {
+    height: auto;
+    overflow: visible;
+    background: white;
+  }
+  #topbar, #editor-panel, #statusbar, .panel-header, #toast {
+    display: none !important;
+  }
+  #preview-panel, #preview-scroll, #paper {
+    display: block !important;
+    background: white;
+    overflow: visible;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none;
+  }
+  @page {
+    margin: 2.2cm 2.5cm 2.5cm 2.5cm;
+    size: A4;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    break-after: avoid;
+    break-inside: avoid;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+    break-inside: auto;
+  }
+  ul, ol { break-inside: auto; }
+  li { break-inside: avoid; }
+  table { break-inside: auto; }
+  thead, .tbl-head { display: table-header-group; }
+  tr { break-inside: avoid; }
+  .math-display { break-inside: avoid; }
+  pre {
+    break-inside: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  blockquote, figure { break-inside: avoid; }
+  #rendered-content pre {
+    background: #f4f4f8 !important;
+    color: #1a1a2e !important;
+    border-left: 3px solid #7c8cf8 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  #rendered-content pre code { color: #1a1a2e !important; }
+  #rendered-content th {
+    background: #2a2a3e !important;
+    color: white !important;
+    -webkit-print-color-adjust: exact;
+  }
+  #rendered-content tr:nth-child(even) td {
+    background: #f7f7fb !important;
+    -webkit-print-color-adjust: exact;
+  }
+  .katex-display {
+    overflow: visible !important;
+  }
 }
 </style>
 </head>
@@ -713,7 +568,7 @@ select.opt-input { cursor: pointer; }
   </div>
   <div class="topbar-actions">
     <button class="btn btn-ghost" onclick="clearAll()">Clear</button>
-    <button class="btn btn-ghost" onclick="loadExample()">Load Example</button>
+    <button class="btn btn-ghost" onclick="loadExample()">Example</button>
     <button class="btn btn-primary" onclick="exportPDF()">⬇ Print PDF</button>
   </div>
 </div>
@@ -810,7 +665,7 @@ Supports:
 </div>
 
 <!-- Toast -->
-<div id="toast" id="toast"></div>
+<div id="toast"></div>
 
 <script>
 /* ═══════════════════════════════════════════════════════════
@@ -868,7 +723,7 @@ function extractMath(text) {
   });
 
   // 4. Inline math: $...$
-  // Avoid matching lone $ (prices etc.) by requiring non-space at edges
+  // Allow optional spaces around the math
   text = text.replace(/\$\s*([^$\n]+?)\s*\$/g, (full, math) => {
     if (/^\d[\d,\.]*$/.test(math.trim())) return full;
     blocks.push({ display: false, math: math.trim() });
@@ -879,8 +734,6 @@ function extractMath(text) {
 }
 
 function restoreMathInHTML(html, blocks) {
-  // The placeholder \x00MATHn\x00 may be inside a <p> or mangled by marked
-  // marked sometimes encodes null bytes or leaves them; use a unique ASCII string
   return html.replace(/\x00MATH(\d+)\x00/g, (_, idx) => {
     const { display, math } = blocks[parseInt(idx)];
     const safemath = math.replace(/"/g, '&quot;');
@@ -929,7 +782,7 @@ function onInput() {
   debounceTimer = setTimeout(() => renderPreview(), 380);
 }
 
-function renderPreview() {
+async function renderPreview() {
   const raw = document.getElementById('input-area').value.trim();
   const titleVal = document.getElementById('doc-title').value.trim();
   const metaVal = document.getElementById('doc-meta').value.trim();
@@ -975,8 +828,8 @@ function renderPreview() {
     // Step 1: Extract math blocks
     const { text: safeText, blocks } = extractMath(raw);
 
-    // Step 2: Parse markdown
-    let html = marked.parse(safeText);
+    // Step 2: Parse markdown (async)
+    let html = await marked.parse(safeText);
 
     // Step 3: Restore math placeholders
     html = restoreMathInHTML(html, blocks);
@@ -991,6 +844,7 @@ function renderPreview() {
     document.getElementById('preview-hint').textContent = pageHint;
     setStatus('done');
   } catch (e) {
+    console.error(e);
     content.innerHTML = `<p style="color:#e06c75">Render error: ${e.message}</p>`;
     setStatus('error');
   }
@@ -1008,14 +862,14 @@ function countTables(container) {
    Export PDF
    ═══════════════════════════════════════════════════════════ */
 
-function exportPDF() {
+async function exportPDF() {
   if (!document.getElementById('input-area').value.trim()) {
     showToast('⚠ Nothing to export — paste some content first.');
     return;
   }
 
   // Make sure latest is rendered
-  renderPreview();
+  await renderPreview();
 
   setTimeout(() => {
     window.print();
@@ -1025,7 +879,6 @@ function exportPDF() {
 
 function updatePageStyle() {
   const size = document.getElementById('page-size').value;
-  // Update @page dynamically
   let styleEl = document.getElementById('dynamic-page-style');
   if (!styleEl) {
     styleEl = document.createElement('style');
