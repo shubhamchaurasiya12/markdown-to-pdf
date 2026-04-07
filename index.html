@@ -556,14 +556,11 @@ select.opt-input { cursor: pointer; }
     size: A4;
   }
 
-  /* 🔥 NEW: Remove any possible red icons or markers */
-  *::before, *::after {
-    content: none !important;
-  }
-  * {
-    position: static !important;
-  }
-  .status-dot, .sdot, [class*="dot"], [class*="status"] {
+  /* 🔥 NEW: Hide extension icons and any stray elements outside the paper content */
+  body > :not(#preview-panel),
+  #preview-panel > :not(#preview-scroll),
+  #preview-scroll > :not(#paper),
+  #paper > :not(#doc-title-display, #doc-meta-display, #rendered-content) {
     display: none !important;
   }
 
