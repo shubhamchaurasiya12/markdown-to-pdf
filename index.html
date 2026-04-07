@@ -5,133 +5,160 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>PasteToPDF</title>
 
-<!-- Favicon -->
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="manifest" href="site.webmanifest">
 
-<!-- KaTeX for math rendering -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
-
-<!-- Marked.js for Markdown -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
 
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;1,400&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
 
 <style>
-/* ─── Variables ─────────────────────────────────────────── */
+/* ── Variables ───────────────────────────────────────────── */
 :root {
-  --bg:        #ffffff;
-  --surface:   #fafafa;
-  --border:    #e5e5e5;
-  --panel:     #f5f5f5;
-  --text:      #171717;
-  --muted:     #a3a3a3;
-  --accent:    #171717;
-  --paper:     #ffffff;
-  --ink:       #171717;
-  --ink-muted: #737373;
-  --rule:      #e5e5e5;
-  --sidebar-w: 380px;
+  --bg: #f5f4f1;
+  --surface: #ffffff;
+  --border: #e4e2dc;
+  --border-strong: #ccc9c0;
+  --text: #1c1b18;
+  --muted: #888580;
+  --faint: #b5b2aa;
+  --accent: #2d6a4f;
+  --accent-light: #e8f4ed;
+  --accent-hover: #245c44;
+  --paper: #fffffe;
+  --ink: #1a1917;
+  --ink-muted: #6b6860;
+  --rule: #e8e5df;
+  --code-bg: #f4f3f0;
+  --table-head: #f0ede8;
+  --table-stripe: #faf9f7;
 }
 
-/* ─── Reset ─────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; overflow: hidden; }
+html, body { height: 100%; overflow: hidden; font-family: 'Inter', system-ui, sans-serif; }
 
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Inter', sans-serif;
   display: flex;
   flex-direction: column;
 }
 
-/* ─── Top Bar ────────────────────────────────────────────── */
-#topbar {
+/* ── Header ──────────────────────────────────────────────── */
+#header {
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
-  height: 48px;
-  background: var(--bg);
+  background: var(--surface);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
-  z-index: 10;
+  z-index: 20;
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-family: 'Inter', sans-serif;
+.wordmark {
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--text);
   letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.logo-icon {
-  width: 22px; height: 22px;
-  background: var(--text);
-  border-radius: 4px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px;
-  color: #ffffff;
-  font-weight: 700;
-  font-family: 'Fira Code', monospace;
+.wordmark-dot {
+  width: 20px;
+  height: 20px;
+  background: var(--accent);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.logo-sep {
-  color: var(--muted);
-  font-weight: 300;
-  font-size: 0.8rem;
+.wordmark-dot svg {
+  width: 11px;
+  height: 11px;
+  fill: #fff;
 }
 
-.topbar-actions { display: flex; gap: 6px; align-items: center; }
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
 
 .btn {
-  padding: 5px 12px;
-  border-radius: 5px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 6px;
   font-family: 'Inter', sans-serif;
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 500;
-  border: none;
+  border: 1px solid var(--border);
   cursor: pointer;
-  transition: all 0.15s;
-  letter-spacing: -0.01em;
-}
-
-.btn-ghost {
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
   background: transparent;
   color: var(--muted);
-  border: 1px solid var(--border);
+  white-space: nowrap;
 }
-.btn-ghost:hover { color: var(--text); border-color: #d4d4d4; background: var(--surface); }
+
+.btn:hover { background: var(--bg); color: var(--text); border-color: var(--border-strong); }
 
 .btn-primary {
-  background: var(--text);
-  color: #ffffff;
-  font-weight: 500;
-  border: 1px solid var(--text);
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
 }
-.btn-primary:hover { background: #333333; }
-.btn-primary:active { background: #111111; }
+.btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: #fff; }
 
-/* ─── Main Layout ────────────────────────────────────────── */
-#app {
+/* ── Mobile tabs ─────────────────────────────────────────── */
+#mobile-tabs {
+  display: none;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.tab-bar {
   display: flex;
+  height: 40px;
+}
+
+.tab-btn {
   flex: 1;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  transition: color 0.12s, border-color 0.12s;
+}
+
+.tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* ── Main layout ─────────────────────────────────────────── */
+#app {
+  flex: 1;
+  display: flex;
   overflow: hidden;
 }
 
-/* ─── Editor Panel ───────────────────────────────────────── */
-#editor-panel {
-  width: var(--sidebar-w);
+/* ── Left panel ──────────────────────────────────────────── */
+#left {
+  width: 380px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -140,121 +167,144 @@ body {
   overflow: hidden;
 }
 
-.panel-header {
-  padding: 10px 14px;
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--muted);
-  border-bottom: 1px solid var(--border);
+.panel-title {
+  padding: 0 16px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
 
-#input-area {
-  flex: 1;
-  resize: none;
-  background: transparent;
-  border: none;
-  outline: none;
-  padding: 14px;
-  font-family: 'Fira Code', monospace;
-  font-size: 0.75rem;
-  line-height: 1.65;
-  color: #404040;
-  caret-color: var(--text);
-  overflow-y: auto;
-}
-
-#input-area::placeholder { color: #c4c4c4; font-style: normal; font-family: 'Inter', sans-serif; font-size: 0.78rem; }
-#input-area::-webkit-scrollbar { width: 4px; }
-#input-area::-webkit-scrollbar-track { background: transparent; }
-#input-area::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 10px; }
-
-.editor-footer {
-  padding: 10px 14px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex-shrink: 0;
-  background: var(--bg);
-}
-
-.options-row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.opt-group {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  flex: 1;
-}
-
-.opt-label {
-  font-size: 0.62rem;
+.panel-label {
+  font-size: 0.7rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--faint);
 }
 
-.opt-input {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 5px 8px;
-  color: var(--text);
-  font-family: 'Inter', sans-serif;
-  font-size: 0.78rem;
-  outline: none;
-  width: 100%;
-  transition: border-color 0.15s;
+#char-count {
+  font-size: 0.7rem;
+  color: var(--faint);
 }
 
-.opt-input:focus { border-color: #a3a3a3; }
-
-select.opt-input { cursor: pointer; }
-
-.char-count {
-  font-size: 0.68rem;
-  color: var(--muted);
-}
-
-/* ─── Hint tags ──────────────────────────────────────────── */
-.hint-tags {
+/* Syntax hints */
+.hints {
   display: flex;
-  gap: 4px;
+  gap: 5px;
   flex-wrap: wrap;
   padding: 8px 14px;
   border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  flex-shrink: 0;
 }
 
-.hint-tag {
-  display: inline-flex;
-  align-items: center;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 3px;
-  padding: 1px 6px;
+.hint {
+  font-family: 'Fira Code', monospace;
   font-size: 0.65rem;
   color: var(--muted);
-  font-family: 'Fira Code', monospace;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 6px;
 }
 
-/* ─── Preview Panel ──────────────────────────────────────── */
-#preview-panel {
+/* Textarea */
+#input-area {
+  flex: 1;
+  resize: none;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 16px;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.77rem;
+  line-height: 1.65;
+  color: var(--text);
+  caret-color: var(--accent);
+  overflow-y: auto;
+}
+
+#input-area::placeholder {
+  color: var(--faint);
+  font-style: italic;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+}
+
+#input-area::-webkit-scrollbar { width: 4px; }
+#input-area::-webkit-scrollbar-track { background: transparent; }
+#input-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+/* Footer inputs */
+.left-footer {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.field-label {
+  font-size: 0.67rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.field-row {
+  display: flex;
+  gap: 8px;
+}
+
+.field-row .field { flex: 1; }
+.field-row .field.narrow { flex: 0 0 88px; }
+
+.f-input {
+  height: 30px;
+  padding: 0 9px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.78rem;
+  color: var(--text);
+  background: var(--bg);
+  outline: none;
+  transition: border-color 0.12s;
+  width: 100%;
+}
+
+.f-input:focus { border-color: var(--accent); background: var(--surface); }
+
+select.f-input { cursor: pointer; }
+
+/* ── Right panel ─────────────────────────────────────────── */
+#right {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: #f0f0f0;
+  background: var(--bg);
+}
+
+#right .panel-title {
+  background: var(--bg);
+  border-bottom-color: var(--border);
+}
+
+#preview-hint {
+  font-size: 0.7rem;
+  color: var(--faint);
 }
 
 #preview-scroll {
@@ -266,372 +316,411 @@ select.opt-input { cursor: pointer; }
   align-items: flex-start;
 }
 
-#preview-scroll::-webkit-scrollbar { width: 5px; }
+#preview-scroll::-webkit-scrollbar { width: 6px; }
 #preview-scroll::-webkit-scrollbar-track { background: transparent; }
-#preview-scroll::-webkit-scrollbar-thumb { background: #d4d4d4; border-radius: 10px; }
+#preview-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
 
-/* ─── Paper ──────────────────────────────────────────────── */
+/* ── Paper ───────────────────────────────────────────────── */
 #paper {
   background: var(--paper);
   color: var(--ink);
   width: 100%;
   max-width: 720px;
-  min-height: 900px;
-  border-radius: 2px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.08);
-  padding: 52px 60px;
-  font-family: 'Lora', serif;
+  min-height: 880px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 56px 60px;
+  font-family: 'Lora', Georgia, serif;
   font-size: 11pt;
-  line-height: 1.75;
+  line-height: 1.8;
 }
 
-/* ─── Empty State ────────────────────────────────────────── */
+/* ── Empty state ─────────────────────────────────────────── */
 .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 500px;
-  gap: 8px;
+  min-height: 480px;
+  gap: 10px;
   text-align: center;
   font-family: 'Inter', sans-serif;
-  color: #c4c4c4;
+  color: var(--faint);
 }
-.empty-icon { font-size: 2rem; }
-.empty-state h3 { font-size: 0.875rem; font-weight: 500; color: #c4c4c4; }
-.empty-state p { font-size: 0.78rem; max-width: 260px; color: #d4d4d4; line-height: 1.6; }
 
-/* ─── Document Content Styles ────────────────────────────── */
-#doc-title-display {
-  font-family: 'DM Serif Display', serif;
-  font-size: 22pt;
-  line-height: 1.2;
-  margin-bottom: 6px;
-  color: #111111;
+.empty-icon {
+  width: 40px;
+  height: 40px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
 }
+
+.empty-icon svg { width: 20px; height: 20px; stroke: var(--faint); fill: none; }
+
+.empty-state h3 {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.empty-state p {
+  font-size: 0.78rem;
+  max-width: 240px;
+  line-height: 1.5;
+}
+
+/* ── Document content ────────────────────────────────────── */
+#doc-title-display {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 22pt;
+  font-weight: 400;
+  line-height: 1.2;
+  color: #111;
+  margin-bottom: 6px;
+}
+
 #doc-meta-display {
   font-family: 'Inter', sans-serif;
   font-size: 8pt;
   color: var(--ink-muted);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
+  margin-bottom: 28px;
+  padding-bottom: 18px;
   border-bottom: 1px solid var(--rule);
 }
 
-#rendered-content h1, #rendered-content h2, #rendered-content h3, #rendered-content h4 {
-  font-family: 'DM Serif Display', serif;
-  color: #111111;
-  margin: 22px 0 8px;
+#rendered-content h1,
+#rendered-content h2,
+#rendered-content h3,
+#rendered-content h4 {
+  font-family: 'Lora', Georgia, serif;
+  font-weight: 500;
+  color: #111;
+  margin: 26px 0 8px;
   line-height: 1.25;
 }
+
 #rendered-content h1 { font-size: 18pt; }
-#rendered-content h2 { font-size: 14pt; }
-#rendered-content h3 { font-size: 11.5pt; font-family: 'Inter', sans-serif; font-weight: 600; }
+#rendered-content h2 { font-size: 14pt; border-bottom: 1px solid var(--rule); padding-bottom: 6px; }
+#rendered-content h3 { font-size: 11.5pt; }
 #rendered-content p { margin: 0 0 12px; }
-#rendered-content ul, #rendered-content ol { margin: 0 0 12px 0; padding-left: 24px; }
-#rendered-content li { margin-bottom: 4px; line-height: 1.65; }
+
+#rendered-content ul,
+#rendered-content ol {
+  margin: 0 0 12px 0;
+  padding-left: 22px;
+}
+
+#rendered-content li { margin-bottom: 4px; line-height: 1.7; }
+
 #rendered-content code {
   font-family: 'Fira Code', monospace;
   font-size: 0.8em;
-  background: #f5f5f5;
-  color: #404040;
+  background: var(--code-bg);
+  color: #5a3e8a;
   padding: 1px 5px;
   border-radius: 3px;
-  border: 1px solid #e5e5e5;
 }
+
 #rendered-content pre {
-  background: #f8f8f8;
-  border-radius: 4px;
+  background: #f7f6f3;
+  border: 1px solid #e8e5de;
+  border-radius: 6px;
   padding: 14px 16px;
   margin: 12px 0 16px;
   overflow-x: auto;
-  border: 1px solid #e5e5e5;
-  border-left: 2px solid #a3a3a3;
+  border-left: 3px solid #b0aaa0;
   white-space: pre-wrap;
   word-break: break-word;
 }
+
 #rendered-content pre code {
   background: transparent;
-  color: #404040;
+  color: #3a3730;
   padding: 0;
   font-size: 0.78em;
   line-height: 1.6;
-  border: none;
 }
+
 #rendered-content blockquote {
   margin: 12px 0;
   padding: 8px 16px;
-  border-left: 2px solid #d4d4d4;
-  color: var(--ink-muted);
+  border-left: 3px solid var(--border-strong);
+  background: var(--bg);
   font-style: italic;
+  color: var(--ink-muted);
 }
+
 #rendered-content table {
   width: 100%;
   border-collapse: collapse;
   font-family: 'Inter', sans-serif;
-  font-size: 9.5pt;
+  font-size: 9pt;
   margin: 12px 0;
 }
+
 #rendered-content th {
-  background: #f5f5f5;
-  color: #404040;
+  background: var(--table-head);
+  color: #3a3730;
   padding: 7px 10px;
   text-align: left;
-  border: 1px solid var(--rule);
   font-weight: 600;
+  border: 1px solid #ddd9d0;
   font-size: 8.5pt;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
 }
+
 #rendered-content td {
   padding: 6px 10px;
-  border: 1px solid var(--rule);
+  border: 1px solid #e8e4db;
   vertical-align: top;
+  background: var(--paper);
 }
-#rendered-content tr:nth-child(even) td { background: #fafafa; }
+
+#rendered-content tr:nth-child(even) td {
+  background: var(--table-stripe);
+}
 
 .table-wrapper { overflow-x: auto; margin: 12px 0; }
 
-.math-display { margin: 16px 0; text-align: center; overflow-x: auto; }
+.math-display { margin: 18px 0; text-align: center; overflow-x: auto; }
 .math-inline { display: inline; }
-.math-error { color: #dc2626; background: #fef2f2; padding: 2px 6px; border-radius: 3px; font-size: 0.8em; }
+.math-error { color: #c0392b; background: rgba(192,57,43,0.08); padding: 2px 6px; border-radius: 3px; font-size: 0.85em; }
 
-/* ─── Status Bar ─────────────────────────────────────────── */
+/* ── Status bar ──────────────────────────────────────────── */
 #statusbar {
-  padding: 5px 14px;
-  background: var(--bg);
-  border-top: 1px solid var(--border);
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 0 16px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
   flex-shrink: 0;
-  font-size: 0.65rem;
-  color: var(--muted);
-  font-family: 'Inter', sans-serif;
-}
-.status-dot {
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: #a3a3a3;
-  display: inline-block;
-  margin-right: 5px;
+  font-size: 0.68rem;
+  color: var(--faint);
 }
 
-/* ─── Toast ──────────────────────────────────────────────── */
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--faint);
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+/* ── Toast ───────────────────────────────────────────────── */
 #toast {
   position: fixed;
   bottom: 16px;
   right: 16px;
   background: var(--text);
-  border-radius: 5px;
-  padding: 7px 12px;
-  font-size: 0.75rem;
-  color: #ffffff;
+  color: var(--surface);
+  border-radius: 7px;
+  padding: 7px 13px;
+  font-size: 0.78rem;
   opacity: 0;
   transform: translateY(6px);
-  transition: all 0.18s;
+  transition: opacity 0.18s, transform 0.18s;
   pointer-events: none;
   z-index: 999;
   font-family: 'Inter', sans-serif;
 }
+
 #toast.show { opacity: 1; transform: translateY(0); }
 
-/* ─── Mobile Responsive ──────────────────────────────────── */
-@media (max-width: 700px) {
-  #app {
-    flex-direction: column;
-  }
-  #editor-panel {
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 720px) {
+  #mobile-tabs { display: flex; }
+
+  #app { flex-direction: column; }
+
+  #left {
     width: 100%;
-    height: 45%;
     border-right: none;
-    border-bottom: 1px solid var(--border);
+    flex: 1;
   }
-  #preview-panel {
-    height: 55%;
+
+  #right {
+    flex: 1;
   }
-  #preview-scroll {
-    padding: 14px;
-  }
-  #paper {
-    padding: 28px 20px;
-    min-height: auto;
-  }
-  .topbar-actions .btn-ghost:first-child {
+
+  #left.tab-hidden,
+  #right.tab-hidden {
     display: none;
   }
-  .opt-group:first-child {
-    flex: 2;
+
+  #preview-scroll { padding: 16px 12px; }
+
+  #paper {
+    padding: 32px 22px;
+    min-height: auto;
   }
-  .panel-header {
-    padding: 8px 12px;
-  }
-  .hint-tags {
-    padding: 6px 12px;
-  }
-  .hint-tag {
-    font-size: 0.6rem;
-    padding: 1px 5px;
-  }
-  #input-area {
-    padding: 10px 12px;
-    font-size: 0.73rem;
-  }
-  .btn {
-    padding: 4px 9px;
-    font-size: 0.73rem;
-  }
+
+  .btn-ghost-mobile { display: none; }
+
+  .panel-title { display: none; }
 }
 
 @media (max-width: 480px) {
-  #paper {
-    padding: 20px 14px;
-  }
-  .btn-primary {
-    padding: 4px 9px;
-    font-size: 0.68rem;
-  }
-  #statusbar {
-    font-size: 0.6rem;
-    padding: 4px 10px;
-  }
+  #header { padding: 0 14px; }
+  #paper { padding: 24px 14px; }
+  .wordmark span { display: none; }
+  .left-footer { padding: 10px 12px; }
+  .hints { display: none; }
 }
 
-/* ─── Print Styles ───────────────────────────────────────── */
+/* ── Print ───────────────────────────────────────────────── */
 @media print {
   html, body {
     height: auto;
     overflow: visible;
     background: white;
   }
-  #topbar, #editor-panel, #statusbar, .panel-header, #toast {
-    display: none !important;
-  }
-  #preview-panel, #preview-scroll, #paper {
+
+  #header, #left, #statusbar, #mobile-tabs, #toast { display: none !important; }
+
+  #right, #preview-scroll, #app {
     display: block !important;
     background: white;
     overflow: visible;
     padding: 0 !important;
     margin: 0 !important;
-    box-shadow: none;
   }
+
+  #paper {
+    border: none;
+    box-shadow: none;
+    max-width: 100%;
+    padding: 0;
+  }
+
   @page {
     margin: 2.2cm 2.5cm 2.5cm 2.5cm;
     size: A4;
   }
-  h1, h2, h3, h4, h5, h6 {
-    break-after: avoid;
-    break-inside: avoid;
-  }
-  p {
-    orphans: 3;
-    widows: 3;
-    break-inside: auto;
-  }
+
+  h1, h2, h3, h4 { break-after: avoid; break-inside: avoid; }
+  p { orphans: 3; widows: 3; break-inside: auto; }
   ul, ol { break-inside: auto; }
   li { break-inside: avoid; }
   table { break-inside: auto; }
-  thead, .tbl-head { display: table-header-group; }
+  thead { display: table-header-group; }
   tr { break-inside: avoid; }
   .math-display { break-inside: avoid; }
-  pre {
-    break-inside: auto;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
+  pre { break-inside: auto; white-space: pre-wrap; word-break: break-word; }
   blockquote, figure { break-inside: avoid; }
+
   #rendered-content pre {
-    background: #f8f8f8 !important;
-    color: #404040 !important;
-    border-left: 2px solid #a3a3a3 !important;
+    background: #f7f6f3 !important;
+    border: 1px solid #ddd9d0 !important;
+    border-left: 3px solid #b0aaa0 !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
-  #rendered-content pre code { color: #404040 !important; }
+
+  #rendered-content pre code {
+    color: #3a3730 !important;
+  }
+
   #rendered-content th {
-    background: #f5f5f5 !important;
-    color: #404040 !important;
+    background: #eeebe4 !important;
     -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
+
   #rendered-content tr:nth-child(even) td {
-    background: #fafafa !important;
+    background: #faf9f7 !important;
     -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
-  .katex-display {
-    overflow: visible !important;
-  }
+
+  .katex-display { overflow: visible !important; }
 }
 </style>
 </head>
 <body>
 
-<!-- ── Top Bar ──────────────────────────────────────────────────────── -->
-<div id="topbar">
-  <div class="logo">
-    <div class="logo-icon">∑</div>
-    PasteToPDF
+<!-- Header -->
+<div id="header">
+  <div class="wordmark">
+    <img src="favicon.ico" width="20" height="20" style="border-radius:5px;display:block;" alt="">
+    <span>PasteToPDF</span>
   </div>
-  <div class="topbar-actions">
-    <button class="btn btn-ghost" onclick="clearAll()">Clear</button>
-    <button class="btn btn-ghost" onclick="loadExample()">Example</button>
-    <button class="btn btn-primary" onclick="exportPDF()">↓ Print PDF</button>
+  <div class="header-right">
+    <button class="btn btn-ghost-mobile" onclick="clearAll()">Clear</button>
+    <button class="btn" onclick="loadExample()">Example</button>
+    <button class="btn btn-primary" onclick="exportPDF()">Export PDF</button>
   </div>
 </div>
 
-<!-- ── Main ─────────────────────────────────────────────────────────── -->
+
+<!-- App -->
 <div id="app">
 
-  <!-- Editor Panel -->
-  <div id="editor-panel">
-    <div class="panel-header">
-      <span>Input</span>
-      <span class="char-count" id="char-count">0 chars</span>
+  <!-- Left: Editor -->
+  <div id="left">
+    <div class="panel-title">
+      <span class="panel-label">Input</span>
+      <span id="char-count">0 chars</span>
     </div>
 
-    <div class="hint-tags">
-      <span class="hint-tag">$x^2$</span>
-      <span class="hint-tag">$$\int$$</span>
-      <span class="hint-tag">**bold**</span>
-      <span class="hint-tag">| table |</span>
-      <span class="hint-tag"># Heading</span>
-      <span class="hint-tag">```code```</span>
+    <div class="hints">
+      <span class="hint">$x^2$</span>
+      <span class="hint">$$\int$$</span>
+      <span class="hint">**bold**</span>
+      <span class="hint">| table |</span>
+      <span class="hint"># Heading</span>
+      <span class="hint">```code```</span>
     </div>
 
     <textarea id="input-area"
-      placeholder="Paste your ChatGPT / Claude / Gemini response here…"
+      placeholder="Paste your AI response here…
+
+Supports markdown, LaTeX math ($inline$, $$display$$),
+tables, code blocks, and blockquotes."
       oninput="onInput()"
       onpaste="onInput()"
     ></textarea>
 
-    <div class="editor-footer">
-      <div class="options-row">
-        <div class="opt-group">
-          <label class="opt-label">Document Title</label>
-          <input type="text" id="doc-title" class="opt-input" placeholder="Optional title…" oninput="renderPreview()">
+    <div class="left-footer">
+      <div class="field">
+        <span class="field-label">Title</span>
+        <input type="text" id="doc-title" class="f-input" placeholder="Optional document title…" oninput="renderPreview()">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <span class="field-label">Author / Date</span>
+          <input type="text" id="doc-meta" class="f-input" placeholder="e.g. Jane Smith · April 2026" oninput="renderPreview()">
         </div>
-        <div class="opt-group" style="max-width:100px">
-          <label class="opt-label">Page Size</label>
-          <select id="page-size" class="opt-input" onchange="updatePageStyle()">
+        <div class="field narrow">
+          <span class="field-label">Page</span>
+          <select id="page-size" class="f-input" onchange="updatePageStyle()">
             <option value="A4">A4</option>
             <option value="letter">Letter</option>
           </select>
         </div>
       </div>
-      <div class="options-row">
-        <div class="opt-group">
-          <label class="opt-label">Author / Date</label>
-          <input type="text" id="doc-meta" class="opt-input" placeholder="e.g. Jane Smith · April 2026">
-        </div>
-      </div>
     </div>
   </div>
 
-  <!-- Preview Panel -->
-  <div id="preview-panel">
-    <div class="panel-header">
-      <span>Preview</span>
-      <span style="font-size:0.65rem;color:var(--muted)" id="preview-hint">← Paste text to begin</span>
+  <!-- Right: Preview -->
+  <div id="right">
+    <div class="panel-title">
+      <span class="panel-label">Preview</span>
+      <span id="preview-hint">Paste text to begin</span>
     </div>
 
     <div id="preview-scroll">
@@ -640,9 +729,17 @@ select.opt-input { cursor: pointer; }
         <div id="doc-meta-display" style="display:none"></div>
         <div id="rendered-content">
           <div class="empty-state">
-            <div class="empty-icon">📄</div>
-            <h3>Your document will appear here</h3>
-            <p>Paste any AI response on the left — math, tables, code, and markdown are all handled.</p>
+            <div class="empty-icon">
+              <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14,2 14,8 20,8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10,9 9,9 8,9"/>
+              </svg>
+            </div>
+            <h3>Your document appears here</h3>
+            <p>Paste any AI response on the left — math, tables, code, and markdown all render.</p>
           </div>
         </div>
       </div>
@@ -651,15 +748,13 @@ select.opt-input { cursor: pointer; }
 
 </div>
 
-<!-- Status Bar -->
+<!-- Status bar -->
 <div id="statusbar">
-  <div>
+  <div class="status-pill">
     <span class="status-dot" id="status-dot"></span>
     <span id="status-text">Ready</span>
   </div>
-  <div>
-    <span id="word-count">0 words</span>
-  </div>
+  <span id="word-count">0 words</span>
 </div>
 
 <!-- Toast -->
@@ -667,14 +762,22 @@ select.opt-input { cursor: pointer; }
 
 <script>
 /* ═══════════════════════════════════════════════════════════
+   Mobile tab switching
+   ═══════════════════════════════════════════════════════════ */
+function switchTab(tab) {
+  const left = document.getElementById('left');
+  const right = document.getElementById('right');
+  document.getElementById('tab-edit').classList.toggle('active', tab === 'edit');
+  document.getElementById('tab-preview').classList.toggle('active', tab === 'preview');
+  left.classList.toggle('tab-hidden', tab !== 'edit');
+  right.classList.toggle('tab-hidden', tab !== 'preview');
+}
+
+/* ═══════════════════════════════════════════════════════════
    Marked.js Configuration
    ═══════════════════════════════════════════════════════════ */
-marked.setOptions({
-  breaks: true,
-  gfm: true,
-});
+marked.setOptions({ breaks: true, gfm: true });
 
-// Custom table renderer to wrap in a div for overflow handling
 const renderer = new marked.Renderer();
 
 renderer.table = function(header, body) {
@@ -693,36 +796,30 @@ renderer.code = function(code, lang) {
 marked.use({ renderer });
 
 /* ═══════════════════════════════════════════════════════════
-   Math Pre/Post Processing (no extra auto‑fix – clean)
+   Math Pre/Post Processing
    ═══════════════════════════════════════════════════════════ */
-
 function extractMath(text) {
   const blocks = [];
 
-  // 1. Display math: $$...$$
   text = text.replace(/\$\$([\s\S]*?)\$\$/g, (_, math) => {
     const id = blocks.length;
     blocks.push({ display: true, math: math.trim() });
     return `\x00MATH${id}\x00`;
   });
 
-  // 2. LaTeX display: \[...\]
   text = text.replace(/\\\[([\s\S]*?)\\\]/g, (_, math) => {
     const id = blocks.length;
     blocks.push({ display: true, math: math.trim() });
     return `\x00MATH${id}\x00`;
   });
 
-  // 3. LaTeX inline: \(...\)
   text = text.replace(/\\\(([\s\S]*?)\\\)/g, (_, math) => {
     const id = blocks.length;
     blocks.push({ display: false, math: math.trim() });
     return `\x00MATH${id}\x00`;
   });
 
-  // 4. Inline math: $...$  (allow optional spaces)
   text = text.replace(/\$\s*([^$\n]+?)\s*\$/g, (full, math) => {
-    // skip if it looks like a price (e.g., $5.00)
     if (/^\d[\d,\.]*$/.test(math.trim())) return full;
     blocks.push({ display: false, math: math.trim() });
     return `\x00MATH${blocks.length-1}\x00`;
@@ -761,15 +858,13 @@ function renderKatexInContainer(container) {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   Main Render Pipeline
+   Render Pipeline
    ═══════════════════════════════════════════════════════════ */
-
 let debounceTimer = null;
 
 function onInput() {
   const area = document.getElementById('input-area');
   const text = area.value;
-
   document.getElementById('char-count').textContent = text.length.toLocaleString() + ' chars';
   clearTimeout(debounceTimer);
   setStatus('typing');
@@ -788,38 +883,35 @@ async function renderPreview() {
   const titleEl = document.getElementById('doc-title-display');
   const metaEl = document.getElementById('doc-meta-display');
 
-  if (titleVal) {
-    titleEl.textContent = titleVal;
-    titleEl.style.display = 'block';
-  } else {
-    titleEl.style.display = 'none';
-  }
+  titleEl.style.display = titleVal ? 'block' : 'none';
+  if (titleVal) titleEl.textContent = titleVal;
 
-  if (metaVal) {
-    metaEl.textContent = metaVal;
-    metaEl.style.display = 'block';
-  } else {
-    metaEl.style.display = 'none';
-  }
+  metaEl.style.display = metaVal ? 'block' : 'none';
+  if (metaVal) metaEl.textContent = metaVal;
 
   if (!raw) {
     content.innerHTML = `
       <div class="empty-state">
-        <div class="empty-icon">📄</div>
-        <h3>Your document will appear here</h3>
-        <p>Paste any AI response on the left — math, tables, code, and markdown are all handled.</p>
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;stroke:var(--faint);fill:none">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14,2 14,8 20,8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+        </div>
+        <h3>Your document appears here</h3>
+        <p>Paste any AI response on the left — math, tables, code, and markdown all render.</p>
       </div>`;
     setStatus('ready');
-    document.getElementById('preview-hint').textContent = '← Paste text to begin';
+    document.getElementById('preview-hint').textContent = 'Paste text to begin';
     return;
   }
 
   setStatus('rendering');
 
   try {
-    // Extract math blocks (no extra auto‑fix)
     const { text: safeText, blocks } = extractMath(raw);
-
     let html = await marked.parse(safeText);
     html = restoreMathInHTML(html, blocks);
     content.innerHTML = html;
@@ -827,27 +919,19 @@ async function renderPreview() {
 
     const eqs = content.querySelectorAll('.math-display, .math-inline').length;
     const tables = content.querySelectorAll('table').length;
-    document.getElementById('preview-hint').textContent = `${words} words · ${eqs} equations · ${tables} tables`;
+    document.getElementById('preview-hint').textContent =
+      `${words} words · ${eqs} eq · ${tables} tables`;
     setStatus('done');
   } catch (e) {
     console.error(e);
-    content.innerHTML = `<p style="color:#dc2626">Render error: ${e.message}</p>`;
+    content.innerHTML = `<p style="color:#c0392b;font-family:'Inter',sans-serif;font-size:0.85rem">Render error: ${e.message}</p>`;
     setStatus('error');
   }
-}
-
-function countMath(container) {
-  return container.querySelectorAll('.math-display, .math-inline').length;
-}
-
-function countTables(container) {
-  return container.querySelectorAll('table').length;
 }
 
 /* ═══════════════════════════════════════════════════════════
    Export PDF
    ═══════════════════════════════════════════════════════════ */
-
 async function exportPDF() {
   if (!document.getElementById('input-area').value.trim()) {
     showToast('Nothing to export — paste some content first.');
@@ -874,16 +958,15 @@ function updatePageStyle() {
 /* ═══════════════════════════════════════════════════════════
    Utilities
    ═══════════════════════════════════════════════════════════ */
-
 function setStatus(state) {
   const dot = document.getElementById('status-dot');
   const txt = document.getElementById('status-text');
   const states = {
-    ready:     { color: '#d4d4d4', text: 'Ready' },
-    typing:    { color: '#f59e0b', text: 'Typing…' },
-    rendering: { color: '#6366f1', text: 'Rendering…' },
-    done:      { color: '#22c55e', text: 'Rendered' },
-    error:     { color: '#ef4444', text: 'Error' },
+    ready:     { color: 'var(--faint)',   text: 'Ready' },
+    typing:    { color: '#e8a020',        text: 'Typing…' },
+    rendering: { color: '#4a7fcb',        text: 'Rendering…' },
+    done:      { color: 'var(--accent)',  text: 'Rendered' },
+    error:     { color: '#c0392b',        text: 'Error' },
   };
   const s = states[state] || states.ready;
   dot.style.background = s.color;
@@ -904,13 +987,12 @@ function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3200);
+  setTimeout(() => t.classList.remove('show'), 3000);
 }
 
 /* ═══════════════════════════════════════════════════════════
    Example Content
    ═══════════════════════════════════════════════════════════ */
-
 function loadExample() {
   document.getElementById('doc-title').value = 'Calculus & Linear Algebra — Quick Reference';
   document.getElementById('doc-meta').value = 'Generated by Claude · April 2026';
