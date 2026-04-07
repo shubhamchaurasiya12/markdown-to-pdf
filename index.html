@@ -559,14 +559,14 @@ select.opt-input { cursor: pointer; }
     break-inside: avoid !important;
   }
 
-  /* Paragraphs: allow natural breaks across pages (no forced gap) */
+  /* Paragraphs: allow natural breaks (no forced gaps) */
   p {
     orphans: 3;
     widows: 3;
     break-inside: auto !important;
   }
 
-  /* Lists: allow page breaks between list items, but keep each item together */
+  /* Lists: allow breaks between items, but keep each item together */
   ul, ol {
     break-inside: auto !important;
   }
@@ -605,18 +605,17 @@ select.opt-input { cursor: pointer; }
     overflow: visible;
   }
 
-  /* Code blocks: keep together, but do NOT force a page break before them */
+  /* ─── CODE BLOCKS: allow breaking across pages (no gap) ─── */
   pre {
-    break-inside: avoid !important;
-    break-before: auto !important;   /* ← prevents extra page break before code */
+    break-inside: auto !important;      /* ← KEY FIX */
     white-space: pre-wrap !important;
-    word-break: break-all !important;
+    word-break: break-word !important;
     overflow: visible !important;
   }
 
   blockquote { break-inside: avoid; }
 
-  /* Preserve colors and backgrounds for print */
+  /* Preserve colors and backgrounds */
   #rendered-content pre {
     background: #f4f4f8 !important;
     color: #1a1a2e !important;
