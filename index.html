@@ -553,77 +553,70 @@ select.opt-input { cursor: pointer; }
     size: A4;
   }
 
-  /* Page break rules */
+  /* Headings: keep with next content, avoid breaking inside */
   h1, h2, h3, h4, h5, h6 {
     break-after: avoid !important;
     break-inside: avoid !important;
   }
 
+  /* Paragraphs: allow natural breaks across pages (no forced gap) */
   p {
     orphans: 3;
     widows: 3;
-    break-inside: avoid;
+    break-inside: auto !important;
   }
 
-  ul, ol { break-inside: avoid; }
-  li { break-inside: avoid; }
+  /* Lists: allow page breaks between list items, but keep each item together */
+  ul, ol {
+    break-inside: auto !important;
+  }
+  li {
+    break-inside: avoid !important;
+  }
 
-  /* ── Tables: allow page breaks between rows, never inside a row ── */
+  /* Tables: allow page breaks between rows, repeat header */
   .table-wrapper {
     overflow: visible !important;
-    /* NO break-inside:avoid — let the table split across pages */
   }
-
   table {
-    break-inside: auto !important;      /* table CAN cross a page boundary   */
+    break-inside: auto !important;
     width: 100% !important;
     table-layout: fixed !important;
   }
-
   thead, .tbl-head {
-    display: table-header-group;        /* repeat header on every page        */
+    display: table-header-group;
   }
-
   tfoot {
     display: table-footer-group;
   }
-
   tr {
-    break-inside: avoid !important;     /* but never cut a row in half        */
+    break-inside: avoid !important;
     break-after: auto !important;
   }
-
   td, th {
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
     white-space: normal !important;
   }
 
-  /* ── Math blocks: keep together ──────────────────────────── */
+  /* Math blocks: keep together */
   .math-display {
     break-inside: avoid;
     overflow: visible;
   }
 
-  /* ── Code: wrap instead of overflow ──────────────────────── */
+  /* Code blocks: keep together, but do NOT force a page break before them */
   pre {
-    break-inside: avoid;
+    break-inside: avoid !important;
+    break-before: auto !important;   /* ← prevents extra page break before code */
     white-space: pre-wrap !important;
     word-break: break-all !important;
     overflow: visible !important;
   }
 
-  /* ── Soft flow hints (orphans/widows) instead of hard avoid ─ */
-  p {
-    orphans: 3 !important;
-    widows: 3 !important;
-    break-inside: auto !important;      /* let text reflow naturally          */
-  }
-
   blockquote { break-inside: avoid; }
-  li { break-inside: avoid; }
 
-  /* Fix code blocks for print */
+  /* Preserve colors and backgrounds for print */
   #rendered-content pre {
     background: #f4f4f8 !important;
     color: #1a1a2e !important;
@@ -631,24 +624,20 @@ select.opt-input { cursor: pointer; }
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
-
   #rendered-content pre code {
     color: #1a1a2e !important;
   }
-
   #rendered-content th {
     background: #2a2a3e !important;
     color: #ffffff !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
-
   #rendered-content tr:nth-child(even) td {
     background: #f7f7fb !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
-
   .katex-display {
     overflow: visible !important;
   }
