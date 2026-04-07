@@ -862,12 +862,10 @@ function extractMath(text) {
 
   // 4. Inline math: $...$
   // Avoid matching lone $ (prices etc.) by requiring non-space at edges
-  text = text.replace(/\$(?=[^\s$])([^$\n]+?)(?<=[^\s$])\$/g, (_, math) => {
-    // Extra guard: skip if it looks like a price ($5.00, $1,000)
-    if (/^\d[\d,\.]*$/.test(math.trim())) return `$${math}$`;
-    const id = blocks.length;
+  text = text.replace(/\$\s*([^$\n]+?)\s*\$/g, (full, math) => {
+    if (/^\d[\d,\.]*$/.test(math.trim())) return full;
     blocks.push({ display: false, math: math.trim() });
-    return `\x00MATH${id}\x00`;
+    return `\x00MATH${blocks.length-1}\x00`;
   });
 
   return { text, blocks };
