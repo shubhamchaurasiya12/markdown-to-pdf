@@ -523,7 +523,10 @@ select.opt-input { cursor: pointer; }
     background: white;
   }
 
-  #topbar, #editor-panel, #statusbar { display: none !important; }
+  /* Hide all UI chrome including the "Preview" header */
+  #topbar, #editor-panel, #statusbar, .panel-header {
+    display: none !important;
+  }
 
   #preview-panel {
     display: block !important;
@@ -605,9 +608,9 @@ select.opt-input { cursor: pointer; }
     overflow: visible;
   }
 
-  /* ─── CODE BLOCKS: allow breaking across pages (no gap) ─── */
+  /* Code blocks: allow breaking across pages (no gap) */
   pre {
-    break-inside: auto !important;      /* ← KEY FIX */
+    break-inside: auto !important;
     white-space: pre-wrap !important;
     word-break: break-word !important;
     overflow: visible !important;
