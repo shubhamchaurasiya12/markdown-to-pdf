@@ -20,24 +20,23 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
 
 <!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
 /* ─── Variables ─────────────────────────────────────────── */
 :root {
-  --bg:        #0b0c10;
-  --surface:   #12131a;
-  --border:    #1e2030;
-  --panel:     #0f1018;
-  --text:      #c8cad8;
-  --muted:     #5a5d72;
-  --accent:    #e8b44b;
-  --accent2:   #7c8cf8;
-  --paper:     #fdfaf4;
-  --ink:       #1a1a1e;
-  --ink-muted: #4a4a56;
-  --rule:      #d0cbc0;
-  --sidebar-w: 420px;
+  --bg:        #ffffff;
+  --surface:   #fafafa;
+  --border:    #e5e5e5;
+  --panel:     #f5f5f5;
+  --text:      #171717;
+  --muted:     #a3a3a3;
+  --accent:    #171717;
+  --paper:     #ffffff;
+  --ink:       #171717;
+  --ink-muted: #737373;
+  --rule:      #e5e5e5;
+  --sidebar-w: 380px;
 }
 
 /* ─── Reset ─────────────────────────────────────────────── */
@@ -47,7 +46,7 @@ html, body { height: 100%; overflow: hidden; }
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   display: flex;
   flex-direction: column;
 }
@@ -58,8 +57,8 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
-  height: 54px;
-  background: var(--surface);
+  height: 48px;
+  background: var(--bg);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
   z-index: 10;
@@ -68,37 +67,43 @@ body {
 .logo {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-family: 'DM Serif Display', serif;
-  font-size: 1.1rem;
-  letter-spacing: 0.01em;
-  color: #e8e9ef;
+  gap: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
 }
 
 .logo-icon {
-  width: 28px; height: 28px;
-  background: var(--accent);
-  border-radius: 6px;
+  width: 22px; height: 22px;
+  background: var(--text);
+  border-radius: 4px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
-  color: #0b0c10;
+  font-size: 11px;
+  color: #ffffff;
   font-weight: 700;
   font-family: 'Fira Code', monospace;
 }
 
-.logo span { color: var(--accent); }
+.logo-sep {
+  color: var(--muted);
+  font-weight: 300;
+  font-size: 0.8rem;
+}
 
-.topbar-actions { display: flex; gap: 8px; align-items: center; }
+.topbar-actions { display: flex; gap: 6px; align-items: center; }
 
 .btn {
-  padding: 6px 14px;
-  border-radius: 7px;
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.8rem;
+  padding: 5px 12px;
+  border-radius: 5px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.78rem;
   font-weight: 500;
   border: none;
   cursor: pointer;
-  transition: all 0.18s;
+  transition: all 0.15s;
+  letter-spacing: -0.01em;
 }
 
 .btn-ghost {
@@ -106,15 +111,16 @@ body {
   color: var(--muted);
   border: 1px solid var(--border);
 }
-.btn-ghost:hover { color: var(--text); border-color: #2e3050; }
+.btn-ghost:hover { color: var(--text); border-color: #d4d4d4; background: var(--surface); }
 
 .btn-primary {
-  background: var(--accent);
-  color: #0b0c10;
-  font-weight: 600;
+  background: var(--text);
+  color: #ffffff;
+  font-weight: 500;
+  border: 1px solid var(--text);
 }
-.btn-primary:hover { background: #f0c265; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(232,180,75,0.3); }
-.btn-primary:active { transform: translateY(0); }
+.btn-primary:hover { background: #333333; }
+.btn-primary:active { background: #111111; }
 
 /* ─── Main Layout ────────────────────────────────────────── */
 #app {
@@ -129,16 +135,16 @@ body {
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  background: var(--panel);
+  background: var(--surface);
   border-right: 1px solid var(--border);
   overflow: hidden;
 }
 
 .panel-header {
-  padding: 12px 16px;
-  font-size: 0.7rem;
+  padding: 10px 14px;
+  font-size: 0.68rem;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
   color: var(--muted);
   border-bottom: 1px solid var(--border);
@@ -154,27 +160,28 @@ body {
   background: transparent;
   border: none;
   outline: none;
-  padding: 16px;
+  padding: 14px;
   font-family: 'Fira Code', monospace;
-  font-size: 0.78rem;
-  line-height: 1.6;
-  color: #9ea3be;
-  caret-color: var(--accent);
+  font-size: 0.75rem;
+  line-height: 1.65;
+  color: #404040;
+  caret-color: var(--text);
   overflow-y: auto;
 }
 
-#input-area::placeholder { color: var(--muted); font-style: italic; }
-#input-area::-webkit-scrollbar { width: 5px; }
+#input-area::placeholder { color: #c4c4c4; font-style: normal; font-family: 'Inter', sans-serif; font-size: 0.78rem; }
+#input-area::-webkit-scrollbar { width: 4px; }
 #input-area::-webkit-scrollbar-track { background: transparent; }
-#input-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+#input-area::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 10px; }
 
 .editor-footer {
-  padding: 12px 16px;
+  padding: 10px 14px;
   border-top: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   flex-shrink: 0;
+  background: var(--bg);
 }
 
 .options-row {
@@ -186,14 +193,14 @@ body {
 .opt-group {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
   flex: 1;
 }
 
 .opt-label {
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
 }
@@ -201,22 +208,44 @@ body {
 .opt-input {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 4px;
   padding: 5px 8px;
   color: var(--text);
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 0.78rem;
   outline: none;
   width: 100%;
+  transition: border-color 0.15s;
 }
 
-.opt-input:focus { border-color: var(--accent2); }
+.opt-input:focus { border-color: #a3a3a3; }
 
 select.opt-input { cursor: pointer; }
 
-.char-count, .word-count {
-  font-size: 0.7rem;
+.char-count {
+  font-size: 0.68rem;
   color: var(--muted);
+}
+
+/* ─── Hint tags ──────────────────────────────────────────── */
+.hint-tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.hint-tag {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 6px;
+  font-size: 0.65rem;
+  color: var(--muted);
+  font-family: 'Fira Code', monospace;
 }
 
 /* ─── Preview Panel ──────────────────────────────────────── */
@@ -225,36 +254,35 @@ select.opt-input { cursor: pointer; }
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: #1a1b25;
+  background: #f0f0f0;
 }
 
 #preview-scroll {
   flex: 1;
   overflow-y: auto;
-  padding: 24px;
+  padding: 28px 24px;
   display: flex;
   justify-content: center;
   align-items: flex-start;
 }
 
-#preview-scroll::-webkit-scrollbar { width: 7px; }
+#preview-scroll::-webkit-scrollbar { width: 5px; }
 #preview-scroll::-webkit-scrollbar-track { background: transparent; }
-#preview-scroll::-webkit-scrollbar-thumb { background: #2a2b38; border-radius: 10px; }
+#preview-scroll::-webkit-scrollbar-thumb { background: #d4d4d4; border-radius: 10px; }
 
 /* ─── Paper ──────────────────────────────────────────────── */
 #paper {
   background: var(--paper);
   color: var(--ink);
   width: 100%;
-  max-width: 760px;
+  max-width: 720px;
   min-height: 900px;
-  border-radius: 3px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4), 0 20px 60px rgba(0,0,0,0.5);
-  padding: 56px 64px;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.08);
+  padding: 52px 60px;
   font-family: 'Lora', serif;
   font-size: 11pt;
   line-height: 1.75;
-  transition: all 0.2s;
 }
 
 /* ─── Empty State ────────────────────────────────────────── */
@@ -264,165 +292,150 @@ select.opt-input { cursor: pointer; }
   align-items: center;
   justify-content: center;
   min-height: 500px;
-  gap: 12px;
+  gap: 8px;
   text-align: center;
-  font-family: 'Outfit', sans-serif;
-  color: var(--ink-muted);
+  font-family: 'Inter', sans-serif;
+  color: #c4c4c4;
 }
-.empty-icon { font-size: 2.8rem; opacity: 0.35; }
-.empty-state h3 { font-size: 1rem; font-weight: 600; }
-.empty-state p { font-size: 0.8rem; max-width: 280px; }
+.empty-icon { font-size: 2rem; }
+.empty-state h3 { font-size: 0.875rem; font-weight: 500; color: #c4c4c4; }
+.empty-state p { font-size: 0.78rem; max-width: 260px; color: #d4d4d4; line-height: 1.6; }
 
 /* ─── Document Content Styles ────────────────────────────── */
 #doc-title-display {
   font-family: 'DM Serif Display', serif;
-  font-size: 24pt;
+  font-size: 22pt;
   line-height: 1.2;
   margin-bottom: 6px;
-  color: #111118;
+  color: #111111;
 }
 #doc-meta-display {
-  font-family: 'Outfit', sans-serif;
-  font-size: 8.5pt;
+  font-family: 'Inter', sans-serif;
+  font-size: 8pt;
   color: var(--ink-muted);
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  margin-bottom: 28px;
-  padding-bottom: 18px;
-  border-bottom: 1.5px solid var(--rule);
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--rule);
 }
 
 #rendered-content h1, #rendered-content h2, #rendered-content h3, #rendered-content h4 {
   font-family: 'DM Serif Display', serif;
-  color: #111118;
-  margin: 24px 0 8px;
+  color: #111111;
+  margin: 22px 0 8px;
   line-height: 1.25;
 }
-#rendered-content h1 { font-size: 20pt; }
-#rendered-content h2 { font-size: 15pt; }
-#rendered-content h3 { font-size: 12pt; font-family: 'Outfit', sans-serif; font-weight: 700; }
+#rendered-content h1 { font-size: 18pt; }
+#rendered-content h2 { font-size: 14pt; }
+#rendered-content h3 { font-size: 11.5pt; font-family: 'Inter', sans-serif; font-weight: 600; }
 #rendered-content p { margin: 0 0 12px; }
-#rendered-content ul, #rendered-content ol { margin: 0 0 12px 0; padding-left: 26px; }
+#rendered-content ul, #rendered-content ol { margin: 0 0 12px 0; padding-left: 24px; }
 #rendered-content li { margin-bottom: 4px; line-height: 1.65; }
 #rendered-content code {
   font-family: 'Fira Code', monospace;
-  font-size: 0.82em;
-  background: #ede9df;
-  color: #4a3060;
+  font-size: 0.8em;
+  background: #f5f5f5;
+  color: #404040;
   padding: 1px 5px;
   border-radius: 3px;
+  border: 1px solid #e5e5e5;
 }
 #rendered-content pre {
-  background: #1e1e2e;
-  border-radius: 6px;
-  padding: 14px 18px;
+  background: #f8f8f8;
+  border-radius: 4px;
+  padding: 14px 16px;
   margin: 12px 0 16px;
   overflow-x: auto;
-  border-left: 3px solid #7c8cf8;
+  border: 1px solid #e5e5e5;
+  border-left: 2px solid #a3a3a3;
   white-space: pre-wrap;
   word-break: break-word;
 }
 #rendered-content pre code {
   background: transparent;
-  color: #cdd6f4;
+  color: #404040;
   padding: 0;
   font-size: 0.78em;
   line-height: 1.6;
+  border: none;
 }
 #rendered-content blockquote {
   margin: 12px 0;
   padding: 8px 16px;
-  border-left: 3px solid var(--accent);
-  background: rgba(232,180,75,0.06);
+  border-left: 2px solid #d4d4d4;
+  color: var(--ink-muted);
   font-style: italic;
 }
 #rendered-content table {
   width: 100%;
   border-collapse: collapse;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 9.5pt;
   margin: 12px 0;
 }
 #rendered-content th {
-  background: #1e1e2e;
-  color: #e0e2f0;
-  padding: 8px 10px;
+  background: #f5f5f5;
+  color: #404040;
+  padding: 7px 10px;
   text-align: left;
-  border: 1px solid #2e2e40;
+  border: 1px solid var(--rule);
+  font-weight: 600;
+  font-size: 8.5pt;
+  letter-spacing: 0.03em;
 }
 #rendered-content td {
   padding: 6px 10px;
   border: 1px solid var(--rule);
   vertical-align: top;
 }
-#rendered-content tr:nth-child(even) td { background: rgba(0,0,0,0.03); }
+#rendered-content tr:nth-child(even) td { background: #fafafa; }
 
 .table-wrapper { overflow-x: auto; margin: 12px 0; }
 
-.math-display { margin: 18px 0; text-align: center; overflow-x: auto; }
+.math-display { margin: 16px 0; text-align: center; overflow-x: auto; }
 .math-inline { display: inline; }
-.math-error { color: #e06c75; background: rgba(224,108,117,0.1); padding: 2px 6px; border-radius: 3px; }
+.math-error { color: #dc2626; background: #fef2f2; padding: 2px 6px; border-radius: 3px; font-size: 0.8em; }
 
 /* ─── Status Bar ─────────────────────────────────────────── */
 #statusbar {
-  padding: 5px 16px;
-  background: var(--panel);
+  padding: 5px 14px;
+  background: var(--bg);
   border-top: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   color: var(--muted);
+  font-family: 'Inter', sans-serif;
 }
 .status-dot {
-  width: 6px; height: 6px;
+  width: 5px; height: 5px;
   border-radius: 50%;
-  background: #4caf50;
+  background: #a3a3a3;
   display: inline-block;
-  margin-right: 6px;
+  margin-right: 5px;
 }
-.status-dot.idle { background: var(--muted); }
 
 /* ─── Toast ──────────────────────────────────────────────── */
 #toast {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #1e2030;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px 14px;
-  font-size: 0.8rem;
-  color: var(--text);
+  bottom: 16px;
+  right: 16px;
+  background: var(--text);
+  border-radius: 5px;
+  padding: 7px 12px;
+  font-size: 0.75rem;
+  color: #ffffff;
   opacity: 0;
-  transform: translateY(8px);
-  transition: all 0.2s;
+  transform: translateY(6px);
+  transition: all 0.18s;
   pointer-events: none;
   z-index: 999;
+  font-family: 'Inter', sans-serif;
 }
 #toast.show { opacity: 1; transform: translateY(0); }
-
-/* ─── Hint tags ──────────────────────────────────────────── */
-.hint-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 2px 8px;
-  font-size: 0.68rem;
-  color: var(--muted);
-  font-family: 'Fira Code', monospace;
-}
-.hint-tags {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  padding: 10px 16px;
-  border-bottom: 1px solid var(--border);
-}
 
 /* ─── Mobile Responsive ──────────────────────────────────── */
 @media (max-width: 700px) {
@@ -439,60 +452,53 @@ select.opt-input { cursor: pointer; }
     height: 55%;
   }
   #preview-scroll {
-    padding: 16px;
+    padding: 14px;
   }
   #paper {
-    padding: 32px 24px;
+    padding: 28px 20px;
     min-height: auto;
   }
   .topbar-actions .btn-ghost:first-child {
-    display: none; /* hide "Clear" on very small screens to save space */
+    display: none;
   }
   .opt-group:first-child {
     flex: 2;
   }
   .panel-header {
-    padding: 10px 12px;
+    padding: 8px 12px;
   }
   .hint-tags {
     padding: 6px 12px;
   }
   .hint-tag {
     font-size: 0.6rem;
-    padding: 2px 6px;
+    padding: 1px 5px;
   }
   #input-area {
-    padding: 12px;
-    font-size: 0.75rem;
+    padding: 10px 12px;
+    font-size: 0.73rem;
   }
   .btn {
-    padding: 5px 10px;
-    font-size: 0.75rem;
+    padding: 4px 9px;
+    font-size: 0.73rem;
   }
 }
 
 @media (max-width: 480px) {
   #paper {
-    padding: 24px 16px;
-  }
-  .logo span:first-of-type {
-    display: none; /* shorten logo text */
+    padding: 20px 14px;
   }
   .btn-primary {
-    padding: 5px 10px;
-    font-size: 0.7rem;
-  }
-  .status-dot {
-    width: 5px;
-    height: 5px;
+    padding: 4px 9px;
+    font-size: 0.68rem;
   }
   #statusbar {
     font-size: 0.6rem;
-    padding: 4px 12px;
+    padding: 4px 10px;
   }
 }
 
-/* ─── Print Styles (clean, no UI, works on mobile) ───────── */
+/* ─── Print Styles ───────────────────────────────────────── */
 @media print {
   html, body {
     height: auto;
@@ -536,20 +542,20 @@ select.opt-input { cursor: pointer; }
   }
   blockquote, figure { break-inside: avoid; }
   #rendered-content pre {
-    background: #f4f4f8 !important;
-    color: #1a1a2e !important;
-    border-left: 3px solid #7c8cf8 !important;
+    background: #f8f8f8 !important;
+    color: #404040 !important;
+    border-left: 2px solid #a3a3a3 !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
-  #rendered-content pre code { color: #1a1a2e !important; }
+  #rendered-content pre code { color: #404040 !important; }
   #rendered-content th {
-    background: #2a2a3e !important;
-    color: white !important;
+    background: #f5f5f5 !important;
+    color: #404040 !important;
     -webkit-print-color-adjust: exact;
   }
   #rendered-content tr:nth-child(even) td {
-    background: #f7f7fb !important;
+    background: #fafafa !important;
     -webkit-print-color-adjust: exact;
   }
   .katex-display {
@@ -564,12 +570,12 @@ select.opt-input { cursor: pointer; }
 <div id="topbar">
   <div class="logo">
     <div class="logo-icon">∑</div>
-    Paste <span>→</span> PDF
+    PasteToPDF
   </div>
   <div class="topbar-actions">
     <button class="btn btn-ghost" onclick="clearAll()">Clear</button>
     <button class="btn btn-ghost" onclick="loadExample()">Example</button>
-    <button class="btn btn-primary" onclick="exportPDF()">⬇ Print PDF</button>
+    <button class="btn btn-primary" onclick="exportPDF()">↓ Print PDF</button>
   </div>
 </div>
 
@@ -593,15 +599,7 @@ select.opt-input { cursor: pointer; }
     </div>
 
     <textarea id="input-area"
-      placeholder="Paste your ChatGPT / Claude / Gemini response here…
-
-Supports:
-• Markdown (headings, bold, italic, lists)
-• Math equations: $inline$ and $$display$$
-• LaTeX: \( ... \) and \[ ... \]
-• Tables
-• Code blocks
-• Blockquotes"
+      placeholder="Paste your ChatGPT / Claude / Gemini response here…"
       oninput="onInput()"
       onpaste="onInput()"
     ></textarea>
@@ -612,7 +610,7 @@ Supports:
           <label class="opt-label">Document Title</label>
           <input type="text" id="doc-title" class="opt-input" placeholder="Optional title…" oninput="renderPreview()">
         </div>
-        <div class="opt-group" style="max-width:110px">
+        <div class="opt-group" style="max-width:100px">
           <label class="opt-label">Page Size</label>
           <select id="page-size" class="opt-input" onchange="updatePageStyle()">
             <option value="A4">A4</option>
@@ -622,7 +620,7 @@ Supports:
       </div>
       <div class="options-row">
         <div class="opt-group">
-          <label class="opt-label">Author / Date (optional)</label>
+          <label class="opt-label">Author / Date</label>
           <input type="text" id="doc-meta" class="opt-input" placeholder="e.g. Jane Smith · April 2026">
         </div>
       </div>
@@ -633,7 +631,7 @@ Supports:
   <div id="preview-panel">
     <div class="panel-header">
       <span>Preview</span>
-      <span style="font-size:0.68rem;color:var(--muted)" id="preview-hint">← Paste text to begin</span>
+      <span style="font-size:0.65rem;color:var(--muted)" id="preview-hint">← Paste text to begin</span>
     </div>
 
     <div id="preview-scroll">
@@ -656,7 +654,7 @@ Supports:
 <!-- Status Bar -->
 <div id="statusbar">
   <div>
-    <span class="status-dot idle" id="status-dot"></span>
+    <span class="status-dot" id="status-dot"></span>
     <span id="status-text">Ready</span>
   </div>
   <div>
@@ -833,7 +831,7 @@ async function renderPreview() {
     setStatus('done');
   } catch (e) {
     console.error(e);
-    content.innerHTML = `<p style="color:#e06c75">Render error: ${e.message}</p>`;
+    content.innerHTML = `<p style="color:#dc2626">Render error: ${e.message}</p>`;
     setStatus('error');
   }
 }
@@ -852,13 +850,13 @@ function countTables(container) {
 
 async function exportPDF() {
   if (!document.getElementById('input-area').value.trim()) {
-    showToast('⚠ Nothing to export — paste some content first.');
+    showToast('Nothing to export — paste some content first.');
     return;
   }
   await renderPreview();
   setTimeout(() => {
     window.print();
-    showToast('✓ Print dialog opened — choose "Save as PDF"');
+    showToast('Print dialog opened — choose "Save as PDF"');
   }, 100);
 }
 
@@ -881,11 +879,11 @@ function setStatus(state) {
   const dot = document.getElementById('status-dot');
   const txt = document.getElementById('status-text');
   const states = {
-    ready:     { color: 'var(--muted)', text: 'Ready' },
-    typing:    { color: '#e8b44b',      text: 'Typing…' },
-    rendering: { color: '#7c8cf8',      text: 'Rendering…' },
-    done:      { color: '#4caf50',      text: 'Rendered' },
-    error:     { color: '#e06c75',      text: 'Error' },
+    ready:     { color: '#d4d4d4', text: 'Ready' },
+    typing:    { color: '#f59e0b', text: 'Typing…' },
+    rendering: { color: '#6366f1', text: 'Rendering…' },
+    done:      { color: '#22c55e', text: 'Rendered' },
+    error:     { color: '#ef4444', text: 'Error' },
   };
   const s = states[state] || states.ready;
   dot.style.background = s.color;
@@ -899,7 +897,7 @@ function clearAll() {
   document.getElementById('char-count').textContent = '0 chars';
   document.getElementById('word-count').textContent = '0 words';
   renderPreview();
-  showToast('✓ Cleared');
+  showToast('Cleared');
 }
 
 function showToast(msg) {
@@ -1002,7 +1000,7 @@ print("Eigenvalues:", eigenvalues)
 `;
 
   onInput();
-  showToast('✓ Example loaded');
+  showToast('Example loaded');
 }
 
 // Init
