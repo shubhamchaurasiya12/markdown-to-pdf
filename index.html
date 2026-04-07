@@ -680,7 +680,7 @@ marked.setOptions({
 const renderer = new marked.Renderer();
 
 renderer.table = function(header, body) {
-  return `<div class="table-wrapper"><tr><thead class="tbl-head">${header}</thead><tbody>${body}</tbody></table></div>`;
+  return `<div class="table-wrapper"><table><thead class="tbl-head">${header}</thead><tbody>${body}</tbody></table></div>`;
 };
 
 renderer.code = function(code, lang) {
@@ -695,50 +695,8 @@ renderer.code = function(code, lang) {
 marked.use({ renderer });
 
 /* ═══════════════════════════════════════════════════════════
-   Math Pre/Post Processing
+   Math Pre/Post Processing (no extra auto‑fix – clean)
    ═══════════════════════════════════════════════════════════ */
-
-// Enhanced fix for ChatGPT-style math delimiters
-function fixCommonMathDelimiters(text) {
-  // Split into lines to detect code blocks
-  const lines = text.split('\n');
-  let inCodeBlock = false;
-  const processed = lines.map(line => {
-    // Toggle code block state (fenced with ```)
-    if (line.trim().startsWith('```')) {
-      inCodeBlock = !inCodeBlock;
-      return line; // do not modify code fence lines
-    }
-    if (inCodeBlock) return line; // leave code block content untouched
-
-    // First handle headings that start with '# [ ... ]'
-    let newLine = line;
-    if (line.trim().startsWith('#') && line.includes('[')) {
-      newLine = newLine.replace(/^(\s*#+\s*)\[([\s\S]*?)\]/g, (_, hash, content) => {
-        if (/[\\^_{}]/.test(content) || /\b(frac|int|sum|lim|sqrt|alpha|beta|gamma|sin|cos|tan|log|ln|det|pmatrix|begin|end)\b/i.test(content)) {
-          return `${hash}\\[ ${content.trim()} \\]`;
-        }
-        return _;
-      });
-    }
-
-    // Convert any remaining [ ... ] (not already converted to \[ ... \])
-    // Use a regex that matches brackets not preceded by backslash (so not escaped)
-    newLine = newLine.replace(/(?<!\\)\[([\s\S]*?)(?<!\\)\]/g, (match, content) => {
-      // Skip if it's a markdown link [text](url) - look ahead for ( after the closing ]
-      // But we can't easily look ahead here. Instead check content for LaTeX patterns.
-      if (/[\\^_{}]/.test(content) || /\b(frac|int|sum|lim|sqrt|alpha|beta|gamma|sin|cos|tan|log|ln|det|pmatrix|begin|end)\b/i.test(content)) {
-        // Convert to display math if it's likely a block, else inline? We'll use display math.
-        // But if the brackets are inside a sentence, display math may break layout.
-        // For simplicity, we convert to \[ \] (display). Most ChatGPT outputs use brackets on separate lines.
-        return `\\[ ${content.trim()} \\]`;
-      }
-      return match;
-    });
-    return newLine;
-  });
-  return processed.join('\n');
-}
 
 function extractMath(text) {
   const blocks = [];
@@ -764,9 +722,9 @@ function extractMath(text) {
     return `\x00MATH${id}\x00`;
   });
 
-  // 4. Inline math: $...$
-  // Allow optional spaces around the math
+  // 4. Inline math: $...$  (allow optional spaces)
   text = text.replace(/\$\s*([^$\n]+?)\s*\$/g, (full, math) => {
+    // skip if it looks like a price (e.g., $5.00)
     if (/^\d[\d,\.]*$/.test(math.trim())) return full;
     blocks.push({ display: false, math: math.trim() });
     return `\x00MATH${blocks.length-1}\x00`;
@@ -814,11 +772,7 @@ function onInput() {
   const area = document.getElementById('input-area');
   const text = area.value;
 
-  // Update char count
-  document.getElementById('char-count').textContent =
-    text.length.toLocaleString() + ' chars';
-
-  // Debounce rendering
+  document.getElementById('char-count').textContent = text.length.toLocaleString() + ' chars';
   clearTimeout(debounceTimer);
   setStatus('typing');
   debounceTimer = setTimeout(() => renderPreview(), 380);
@@ -830,11 +784,9 @@ async function renderPreview() {
   const metaVal = document.getElementById('doc-meta').value.trim();
   const content = document.getElementById('rendered-content');
 
-  // Update word count
   const words = raw ? raw.split(/\s+/).filter(Boolean).length : 0;
   document.getElementById('word-count').textContent = words.toLocaleString() + ' words';
 
-  // Title & meta display
   const titleEl = document.getElementById('doc-title-display');
   const metaEl = document.getElementById('doc-meta-display');
 
@@ -867,26 +819,17 @@ async function renderPreview() {
   setStatus('rendering');
 
   try {
-    // 🔥 Auto-fix ChatGPT-style math delimiters before extraction
-    raw = fixCommonMathDelimiters(raw);
-
-    // Step 1: Extract math blocks
+    // Extract math blocks (no extra auto‑fix)
     const { text: safeText, blocks } = extractMath(raw);
 
-    // Step 2: Parse markdown (async)
     let html = await marked.parse(safeText);
-
-    // Step 3: Restore math placeholders
     html = restoreMathInHTML(html, blocks);
-
-    // Step 4: Set HTML
     content.innerHTML = html;
-
-    // Step 5: Render KaTeX
     renderKatexInContainer(content);
 
-    const pageHint = words + ' words · ' + countMath(content) + ' equations · ' + countTables(content) + ' tables';
-    document.getElementById('preview-hint').textContent = pageHint;
+    const eqs = content.querySelectorAll('.math-display, .math-inline').length;
+    const tables = content.querySelectorAll('table').length;
+    document.getElementById('preview-hint').textContent = `${words} words · ${eqs} equations · ${tables} tables`;
     setStatus('done');
   } catch (e) {
     console.error(e);
@@ -912,10 +855,7 @@ async function exportPDF() {
     showToast('⚠ Nothing to export — paste some content first.');
     return;
   }
-
-  // Make sure latest is rendered
   await renderPreview();
-
   setTimeout(() => {
     window.print();
     showToast('✓ Print dialog opened — choose "Save as PDF"');
